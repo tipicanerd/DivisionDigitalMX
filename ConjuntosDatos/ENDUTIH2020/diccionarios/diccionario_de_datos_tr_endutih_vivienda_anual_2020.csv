@@ -1,0 +1,20 @@
+﻿CAMPO,DESCRIPCION,LONGITUD,TIPO_DATO,RANGO_VALIDO,METADATOS
+UPM,Unidad primaria de muestreo,7,Varchar2,[0100026-3260770],Unidad primaria de muestreo
+VIV_SEL,Vivienda seleccionada,2,Varchar2,[01-24],Vivienda seleccionada 
+P1_1,1.1 ¿De qué material es la mayor parte del piso de esta vivienda?,1,Varchar2,[1-3],"1 Tierra, 2 Cemento o firme, 3 Madera, mosaico u otro recubrimiento"
+P1_2,1.2 ¿En esta vivienda tienen…,1,Varchar2,[1-6],"1 agua entubada dentro de la vivienda?, 2 agua entubada fuera de la vivienda, pero dentro del terreno?, 3 agua entubada de llave pública (o hidrante)?, 4  agua entubada que acarrean de otra vivienda?, 5 agua de pipa?, 6 agua de un pozo, río, arroyo, lago u otro?"
+P1_3,1.3 ¿En esta vivienda tienen drenaje o desagüe conectado a…,1,Varchar2,[1-5],"1 la red pública?, 2 una fosa séptica?, 3 una tubería que va a dar a una barranca o grieta?, 4 una tubería que va a dar a un río, lago o mar?, 5 ¿No tiene drenaje?"
+P1_4,1.4 ¿Disponen de energía eléctrica?,1,Varchar2,[1-2],"1 Sí, 2 No"
+P1_5_1,1.5 ¿En esta vivienda disponen de refrigerador?,1,Varchar2,[1-2],"1 Sí, 2 No"
+P1_5_2,1.5 ¿En esta vivienda disponen de lavadora?,1,Varchar2,[1-2],"1 Sí, 2 No"
+P1_5_3,1.5 ¿En esta vivienda disponen de automóvil o camioneta?,1,Varchar2,[1-2],"1 Sí, 2 No"
+P2_1,2.1 ¿Cuántas personas viven normalmente en está vivienda contando a los niños chiquitos y a los ancianos? (Incluya también a los trabajadores domésticos  que viven aquí),2,Number,[01-20],Total de personas en la vivienda 
+P2_2,2.2 ¿Todas las personas que viven en esta vivienda comparten un mismo gasto para comer?,1,Varchar2,[1-2],"1 Sí, 2 No"
+P2_3,"2.3 Entonces, ¿cuántos hogares o grupos de personas tienen gasto separado para comer contando el de usted?",2,Number,[2-5],Número de hogares en la vivienda
+FAC_VIV,Factor,5,Number,[60-5419],Factor
+UPM_DIS,Unidad primaria de muestreo,5,Varchar2,[00001-08237],Unidad primaria de muestreo
+EST_DIS,Estrato de diseño muestral,3,Varchar2,[001-340],Estrato de diseño muestral
+DOMINIO,Población rural y urbana,1,Varchar2,"[U,R]",Población rural y urbana
+TLOC,Tamaño de la Localidad,1,Varchar2,[1-4],"1 100,000 y más habitantes, 2 15,000 a 99,999 habitantes, 3 2,500 a 14,999 habitantes, 4 menor a 2500 habitantes"
+ESTRATO,Estrato socioeconómico,1,Varchar2,[1-4],"1 Bajo, 2 Medio bajo, 3 Medio alto, 4 Alto"
+ENT,Entidad ,2,Varchar2,[01-32],"01 Aguascalientes, 02 Baja California, 03 Baja California Sur, 04 Campeche, 05 Coahuila de Zaragoza, 06 Colimia, 07 Chiapas, 08 Chihuahua, 09 Ciudad de México, 10 Durango, 11 Guanajuato, 12 Guerrero, 13 Hidalgo, 14 Jalisco, 15 Estado de México, 16 Michoacán de Ocampo, 17 Morelos, 18 Nayarit, 19 Nuevo León, 20 Oaxaca, 21 Puebla, 22 Querétaro, 23 Quintana Roo, 24 San Luis Potosí, 25 Sinaloa, 26 Sonora, 27 Tabasco, 28 Tamaulipas, 29 Tlaxcala, 30 Veracruz de Ingancio de la Llave, 31 Yucatán, 32 Zacatecas"

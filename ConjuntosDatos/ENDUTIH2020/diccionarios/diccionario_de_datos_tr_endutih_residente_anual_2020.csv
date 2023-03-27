@@ -1,0 +1,31 @@
+﻿CAMPO,DESCRIPCION,LONGITUD,TIPO_DATO,RANGO_VALIDO,METADATOS
+UPM,Unidad primaria de muestreo,7,Varchar2,[0100026-3260770],Unidad primaria de muestreo
+VIV_SEL,Vivienda seleccionada ,2,Varchar2,[01-24],Vivienda seleccionada 
+HOGAR,Número de Hogar en la vivienda,2,Varchar2,[01-05],Número de Hogar en la vivienda
+NUM_REN,Número de renglón,2,Varchar2,[01-21],Número de renglón
+PAREN,3.3 ¿Qué es (NOMBRE) del jefe(a) del hogar?,1,Varchar2,[1-6],"1 Jefe(a), 2 Esposo(a) o compañero(a), 3 Hijo(a), 4 Nieto(a), 5 Otro parentesco, 6 Sin parentesco"
+SEXO,3.4 (NOMBRE) es hombre (NOMBRE) es mujer,1,Varchar2,[1-2],"1 Hombre, 2 Mujer"
+EDAD,3.5 ¿Cuántos años cumplidos tiene (NOMBRE)?,2,Varchar2,[00-99],
+DIA,3.6 ¿En qué día nació (NOMBRE)?,2,Varchar2,[01-31],
+MES,3.6 ¿En qué mes nació (NOMBRE)?,2,Varchar2,[01-12],
+P3_7,3.7 ¿(NOMBRE) asiste actualmente a la escuela?,1,Varchar2,[1-2],"1 Sí, 2 No"
+NIVEL,"3.8 ¿Hasta qué año o grado aprobó (NOMBRE) en la escuela? 
+Nivel",2,Varchar2,"[00-11],99","00 Ninguno, 01 Preescolar o kínder, 02 Primaria, 03 Secundaria, 04 Normal básica, 05 Estudio técnico terminal con secundaria, 06 Preparatoria o bachillerato, 08 Licenciatura o ingeniería, 09 Especialidad,  10 Maestría, 11 Doctorado, 99 No sabe"
+GRADO,"3.8 ¿Hasta qué año o grado aprobó (NOMBRE) en la escuela? 
+Grado",1,Varchar2,[0-9],
+P3_9_1,"3.9 En los últimos tres meses, ¿(NOMBRE) ha hecho uso de…
+ computadora, laptop o tablet?",1,Varchar2,"[1-2],9","1 Sí, 2 No, 9 No sabe"
+P3_9_2,"3.9 En los últimos tres meses, ¿(NOMBRE) ha hecho uso de…
+ internet?",1,Varchar2,"[1-2],9","1 Sí, 2 No, 9 No sabe"
+P3_9_3,"3.9 En los últimos tres meses, ¿(NOMBRE) ha hecho uso de…
+ celular?",1,Varchar2,"[1-2],9","1 Sí, 2 No, 9 No sabe"
+P3_10,3.10 ¿La semana pasada (NOMBRE)…,1,Varchar2,[1-8],"1 trabajó (por lo menos una hora)?, 2 tenía trabajo, pero no trabajo?, 3 buscó trabajo?, 4 está jubilado(a) o pensionado(a)?, 5 se dedicó a estudiar?, 6 se dedicó a los quehaceres del hogar y/o al cuidado de sus hijos(as) u otro familiar?, 7 es una persona con alguna limitación física o mental que le impide trabajar?, 8 no trabajó?"
+P3_11,"3.11 Aunque ya  dijo que (NOMBRE) no trabajó, ¿la semana pasada…",1,Varchar2,[1-4],"1 vendió o hizo algún producto para su venta?, 2 prestó algún servicio a cambio de un pago (cortar cabello, dar clases, lavar ropa ajena)?, 3 ayudó en las tierras o en el negocio de un familiar o de otra persona?, 4 Entonces, ¿no trabajó?"
+P3_12,3.12 ¿En su trabajo o actividad de la semana pasada (NOMBRE) fue…,1,Varchar2,[1-6],"1 empleado(a)?, 2 obrero(a)?, 3 jornalero(a) o peón?, 4 trabajador(a) por cuenta propia (no contrata trabajadores(as)?, 5 patrón(a) o empleador(a) (contrata trabajadores(as)?, 6 trabajador(a) sin pago en un negocio familiar o no familiar?"
+FAC_HOGAR,Factor,"5,0",Number,[60-5419],Factor
+UPM_DIS,Unidad primaria de muestreo,5,Varchar2,[00001-08237],Unidad primaria de muestreo
+EST_DIS,Estrato de diseño muestral,3,Varchar2,[001-340],Estrato de diseño muestral
+DOMINIO,Población rural y urbana,1,Varchar2,"[U,R]",Población rural y urbana
+TLOC,Tamaño de la Localidad,1,Varchar2,[1-4],"1 100,000 y más habitantes, 2 15,000 a 99,999 habitantes, 3 2,500 a 14,999 habitantes, 4 menor a 2500 habitantes"
+ESTRATO,Estrato socioeconómico,1,Varchar2,[1-4],"1 Bajo, 2 Medio bajo, 3 Medio alto, 4 Alto"
+ENT,Entidad ,2,Varchar2,[01-32],"01 Aguascalientes, 02 Baja California, 03 Baja California Sur, 04 Campeche, 05 Coahuila de Zaragoza, 06 Colimia, 07 Chiapas, 08 Chihuahua, 09 Ciudad de México, 10 Durango, 11 Guanajuato, 12 Guerrero, 13 Hidalgo, 14 Jalisco, 15 Estado de México, 16 Michoacán de Ocampo, 17 Morelos, 18 Nayarit, 19 Nuevo León, 20 Oaxaca, 21 Puebla, 22 Querétaro, 23 Quintana Roo, 24 San Luis Potosí, 25 Sinaloa, 26 Sonora, 27 Tabasco, 28 Tamaulipas, 29 Tlaxcala, 30 Veracruz de Ingancio de la Llave, 31 Yucatán, 32 Zacatecas"

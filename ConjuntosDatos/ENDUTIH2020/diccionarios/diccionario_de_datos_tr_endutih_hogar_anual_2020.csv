@@ -1,0 +1,146 @@
+﻿CAMPO,DESCRIPCION,LONGITUD,TIPO_DATO,RANGO_VALIDO,METADATOS
+UPM,Unidad primaria de muestreo,7,Varchar2,[0100026-3260770],Unidad primaria de muestreo
+VIV_SEL,Vivienda seleccionada,2,Varchar2,[01-24],Vivienda seleccionada 
+HOGAR,Número de Hogar en la vivienda,2,Varchar2,[01-05],Número de Hogar en la vivienda
+P4_1_1,"4.1 Por favor, dígame si disponen de los siguientes bienes:
+Radio",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_1_2,"4.1 Por favor, dígame si disponen de los siguientes bienes:
+Televisor analógico (de cinescopio)",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_1_3,"4.1 Por favor, dígame si disponen de los siguientes bienes:
+Decodificador de TV digital abierta (diferente a TV de paga)",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_1_4,"4.1 Por favor, dígame si disponen de los siguientes bienes:
+Pantalla plana (televisor digital, LCD o LED)",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_1_5,"4.1 Por favor, dígame si disponen de los siguientes bienes:
+Consola de videojuegos",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_1_6,"4.1 Por favor, dígame si disponen de los siguientes bienes: 
+Teléfono celular móvil (por cualquiera de los integrantes)",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_1_6_1,"¿En total, de cuántos teléfonos
+celulares disponen en el hogar?",2,Number,"[01-98, 99]",99 No sabe
+P4_1_6_2,"¿Cuántos de estos son celulares
+inteligentes (Smartphone)?",2,Number,"[01-98, 99]",99 No sabe
+P4_2_1,"4.2 ¿Disponen de... 
+computadora de escritorio (Teclado, monitor y CPU se encuentran separados)?",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_2_2,"4.2 ¿Disponen de... 
+computadora portátil (teclado, monitor y CPU se encuentran integrados físicamente)?",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_2_3,"4.2 ¿Disponen de... 
+Tablet (teclado y puntero virtuales en la pantalla táctil)?",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_3,"4.3 ¿Por qué no disponen de computadora, laptop o Tablet?",1,Varchar2,[1-8],"1 Falta de recursos económicos, 2 No les interesa o no la necesitan, 3 No saben usarla, 4 Utilizan un celular inteligente (Smartphone) u otro dispositivo para conectarse a Internet, 5 Porqué está descompuesta, 6 Por razones relacionadas con la privacidad o seguridad, 7 Otra razón, 8 No responde"
+P4_3A,"4.3 ¿Por qué no disponen de computadora, laptop o Tablet? 
+ Otra razón Especifique",100,Varchar2,"[0-9, A-Z]",
+P4_4,4.4 ¿Disponen de conexión a internet en el hogar?,1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_5,"4.5 ¿La conexión a internet es fija, móvil o de ambas?",1,Varchar2,"[1-3, 9]","1 Solo fija (la conexión solo puede realizarse en el interior o cercanía de la vivienda, e incluye conexión por WIFI), 2 Solo móvil (la conexión mediante red celular por cualquiera de los integrantes del hogar), 3 Ambas (fija y móvil), 9 No sabe"
+P4_6_1,"4.6 ¿El medio de conexión fija es por…
+línea telefónica dedicada (con la que puede hablar por teléfono cuando está conectado a internet)?",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_6_2,"4.6 ¿El medio de conexión fija es por... 
+internet por cable (comúnmente asociada a TV de paga)?",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_6_3,"4.6 ¿El medio de conexión fija es por…
+ conexión satelital (por una antena parabólica, no confundir con las antenas de plato que otorgan servicio como Sky o Dish)?",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_6_4,"4.6 ¿El medio de conexión fija es por … 
+señal abierta de WIFI (externa a su hogar)?",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_6_5,"4.6 ¿El medio de conexión fija es por…
+ línea telefónica por marcación (DIAL UP, mientras está conectado a internet no puede hablar por teléfono)?",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_6_6,"4.6 ¿El medio de conexión fija es por… 
+Otro medio",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_6A,"4.6 ¿El medio de conexión fija es por…
+ Otro medio Especifique",100,Varchar2,"[0-9, A-Z]",
+P4_7_1,"4.7 ¿Con qué equipo(s) hacen la conexión móvil? 
+Con un celular inteligente (Smartphone)",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_7_2,"4.7 ¿Con qué equipo(s) hacen la conexión móvil? 
+Mediante una tarjeta BAM o celular conectados a una computadora, como medios de conexión móvil",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_7_3,"4.7 ¿Con qué equipo(s) hacen la conexión móvil? 
+Con una Tablet con acceso a red móvil",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_7_4,"4.7 ¿Con qué equipo(s) hacen la conexión móvil? 
+Otro equipo",1,Varchar2,[1-2],"1 Sí, 2 No"
+P4_7A,"4.7 ¿Con qué equipo(s) hacen la conexión móvil? 
+Otro equipo Especifique",100,Varchar2,"[0-9, A-Z]","1 Sí, 2 No"
+P4_8,4.8 ¿Por qué no disponen de internet en el hogar?,2,Varchar2,[1-10],"1 Falta de recursos económicos (servicio incosteable), 2 No les interesa o no lo necesitan, 3 No sabe usarlo, 4 Desconoce su utilidad, 5 Equipo insuficiente o sin capacidad, 6 No hay proveedor o infraestructura en su localidad, 7 Tienen acceso a Internet en otros lugares, 8 Por razones relacionadas con la privacidad o seguridad, 9 Otra razón, 10 No responde"
+P4_8A,4.8 ¿Por qué no disponen de internet en el hogar? Especifique,100,Varchar2,"[0-9, A-Z]",
+P5_1,5.1 ¿Disponen de servicio de televisión de paga?,1,Varchar2,[1-2],"1 Sí, 2 No"
+P5_2_1,"5.2 ¿Lo recibe por…
+ cable (Megacable, Izzi, etcétera.)? ",1,Varchar2,[1-2],"1 Sí, 2 No"
+P5_2_2,"5.2 ¿Lo recibe por…
+ vía satélite (Sky, Dish, etcétera.)?",1,Varchar2,[1-2],"1 Sí, 2 No"
+P5_3_1,"5.3 ¿Comparte el servicios de televisión de paga…
+con otro hogar?",1,Varchar2,[1-2],"1 Sí, 2 No"
+P5_3_2,"5.3 ¿Comparte el servicios de televisión de paga…
+con un establecimiento dentro o anexo del hogar (consultorio, abarrotes, papelería, etc.)?",1,Varchar2,[1-2],"1 Sí, 2 No"
+P5_4,5.4 ¿Porqué no cuenta con servicio de televisión de paga?,1,Varchar2,[1-6],"1 Falta de recursos económico, 2 No les interesa o no lo necesitan, 3 No tiene televisión, 4 No hay servicios en su localidad (falta de infraestructura), 5 No cubre las necesidades del hogar, 6 otra razón"
+P5_4A,"5.4 ¿Porqué no cuenta con servicio de televisión de paga?
+Otro equipo Especifique",100,Varchar2,"[0-9, A-Z]",
+P5_5,5.5 ¿Disponen de línea telefónica fija (puede ser telefonía celular fija)?,1,Varchar2,[1-2],"1 Sí, 2 No"
+P5_6_1,5.6 Usted declaró que dispone de (los) siguiente(s) servicio(s): Internet ,1,Varchar2,[1-2],"1 Sí, 2 No"
+P5_6_2,5.6 Usted declaró que dispone de (los) siguiente(s) servicio(s): TV de paga ,1,Varchar2,[1-2],"1 Sí, 2 No"
+P5_6_3,5.6 Usted declaró que dispone de (los) siguiente(s) servicio(s):Telefonía fija ,1,Varchar2,[1-2],"1 Sí, 2 No"
+P5_6_4,5.6 Usted declaró que dispone de (los) siguiente(s) servicio(s):Telefonía móvil,1,Varchar2,[1-2],"1 Sí, 2 No"
+P5_6_5,5.6 Usted declaró que dispone de (los) siguiente(s) servicio(s): Ninguno ,1,Varchar2,[1-2],"1 Sí, 2 No"
+P5_7_1,"5.7 De los servicios de (opción de 5.6). ¿Dígame si los disponen en paquete o los reciben de manera separada…
+ TV de paga, telefonía fija, internet y telefonía móvil?",1,Varchar2,"[1-2, 9]","1 Sí, 2 No, 9 No sabe"
+P5_8_1,"5.8 En el último mes, ¿cuál es el monto del pago realizado por el servicio de … 
+TV de paga, Telefonía fija, Internet y Telefonía móvil?",4,Number,"[1-9998, 0, 9999]","0 No paga, 9999 No sabe"
+P5_9_1,"5.9 ¿Recibe sin pago el servicio… (CÓDIGO “0, 000” o “9, 999” EN 5.8) 
+TV de paga, Telefonía fija, Internet y Telefonía móvil?",1,Varchar2,"[1-2, 9]","1 Sí, 2 No, 9 No sabe"
+P5_10_1,"5.10 Entonces, ¿su paquete incluye un servicio que no utiliza? 
+TV de paga, Telefonía fija, Internet y Telefonía móvil?",1,Varchar2,"[1-2, 8]","1 Sí, 2 No, 8 No responde"
+P5_7_2,"5.7 De los servicios de (opción de 5.6). ¿Dígame si los disponen en paquete o los reciben de manera separada…
+TV de paga, Telefonía fija e Internet?",1,Varchar2,"[1-2, 9]","1 Sí, 2 No, 9 No sabe"
+P5_8_2,"5.8 En el último mes, ¿cuál es el monto del pago realizado por el servicio de … 
+TV de paga, Telefonía fija e Internet?",4,Number,"[1-9998, 0, 9999]","0 No paga, 9999 No sabe"
+P5_9_2,"5.9 ¿Recibe sin pago el servicio… (CÓDIGO “0, 000” o “9, 999” EN 5.8)
+TV de paga, Telefonía fija e Internet?",1,Varchar2,"[1-2, 9]","1 Sí, 2 No, 9 No sabe"
+P5_10_2,"5.10 Entonces, ¿su paquete incluye un servicio que no utiliza? 
+TV de paga, Telefonía fija e Internet?",1,Varchar2,"[1-2, 8]","1 Sí, 2 No, 8 No responde"
+P5_7_3,"5.7 De los servicios de (opción de 5.6). ¿Dígame si los disponen en paquete o los reciben de manera separada…
+TV de paga y Telefonía fija?",1,Varchar2,"[1-2, 9]","1 Sí, 2 No, 9 No sabe"
+P5_8_3,"5.8 En el último mes, ¿cuál es el monto del pago realizado por el servicio de … 
+TV de paga y Telefonía fija?",4,Number,"[1-9998, 0, 9999]","0 No paga, 9999 No sabe"
+P5_9_3,"5.9 ¿Recibe sin pago el servicio… (CÓDIGO “0, 000” o “9, 999” EN 5.8)
+TV de paga y Telefonía fija?",1,Varchar2,"[1-2, 9]","1 Sí, 2 No, 9 No sabe"
+P5_10_3,"5.10 Entonces, ¿su paquete incluye un servicio que no utiliza? 
+TV de paga y Telefonía fija?",1,Varchar2,"[1-2, 8]","1 Sí, 2 No, 8 No responde"
+P5_7_4,"5.7 De los servicios de (opción de 5.6). ¿Dígame si los disponen en paquete o los reciben de manera separada…
+TV de paga e Internet?",1,Varchar2,"[1-2, 9]","1 Sí, 2 No, 9 No sabe"
+P5_8_4,"5.8 En el último mes, ¿cuál es el monto del pago realizado por el servicio de … 
+TV de paga e Internet?",4,Number,"[1-9998, 0, 9999]","0 No paga, 9999 No sabe"
+P5_9_4,"5.9 ¿Recibe sin pago el servicio… (CÓDIGO “0, 000” o “9, 999” EN 5.8) 
+TV de paga e Internet?",1,Varchar2,"[1-2, 9]","1 Sí, 2 No, 9 No sabe"
+P5_10_4,"5.10 Entonces, ¿su paquete incluye un servicio que no utiliza? 
+TV de paga e Internet?",1,Varchar2,"[1-2, 8]","1 Sí, 2 No, 8 No responde"
+P5_7_5,"5.7 De los servicios de (opción de 5.6). ¿Dígame si los disponen en paquete o los reciben de manera separada…
+Telefonía fija e Internet?",1,Varchar2,"[1-2, 9]","1 Sí, 2 No, 9 No sabe"
+P5_8_5,"5.8 En el último mes, ¿cuál es el monto del pago realizado por el servicio de … 
+Telefonía fija e Internet?",4,Number,"[1-9998, 0, 9999]","0 No paga, 9999 No sabe"
+P5_9_5,"5.9 ¿Recibe sin pago el servicio… (CÓDIGO “0, 000” o “9, 999” EN 5.8) 
+Telefonía fija e Internet?",1,Varchar2,"[1-2, 9]","1 Sí, 2 No, 9 No sabe"
+P5_10_5,"5.10 Entonces, ¿su paquete incluye un servicio que no utiliza? 
+Telefonía fija e Internet?",1,Varchar2,"[1-2, 8]","1 Sí, 2 No, 8 No responde"
+P5_7_6,"5.7 De los servicios de (opción de 5.6). ¿Dígame si los disponen en paquete o los reciben de manera separada…
+Solo TV de paga?",1,Varchar2,"[1-2, 9]","1 Sí, 2 No, 9 No sabe"
+P5_8_6,"5.8 En el último mes, ¿cuál es el monto del pago realizado por el servicio de … 
+Solo TV de paga?",4,Number,"[1-9998, 0, 9999]","0 No paga, 9999 No sabe"
+P5_9_6,"5.9 ¿Recibe sin pago el servicio… (CÓDIGO “0, 000” o “9, 999” EN 5.8) 
+Solo TV de paga?",1,Varchar2,"[1-2, 9]","1 Sí, 2 No, 9 No sabe"
+P5_7_7,"5.7 De los servicios de (opción de 5.6). ¿Dígame si los disponen en paquete o los reciben de manera separada…
+Solo telefonía fija?",1,Varchar2,"[1-2, 9]","1 Sí, 2 No, 9 No sabe"
+P5_8_7,"5.8 En el último mes, ¿cuál es el monto del pago realizado por el servicio de … 
+Solo telefonía fija?",4,Number,"[1-9998, 0, 9999]","0 No paga, 9999 No sabe"
+P5_9_7,"5.9 ¿Recibe sin pago el servicio… (CÓDIGO “0, 000” o “9, 999” EN 5.8) 
+Solo telefonía fija?",1,Varchar2,"[1-2, 9]","1 Sí, 2 No, 9 No sabe"
+P5_7_8,"5.7 De los servicios de (opción de 5.6). ¿Dígame si los disponen en paquete o los reciben de manera separada…
+Solo Internet?",1,Varchar2,"[1-2, 9]","1 Sí, 2 No, 9 No sabe"
+P5_8_8,"5.8 En el último mes, ¿cuál es el monto del pago realizado por el servicio de … 
+Solo Internet?",4,Number,"[1-9998, 0, 9999]","0 No paga, 9999 No sabe"
+P5_9_8,"5.9 ¿Recibe sin pago el servicio… (CÓDIGO “0, 000” o “9, 999” EN 5.8) 
+Solo Internet?",1,Varchar2,"[1-2, 9]","1 Sí, 2 No, 9 No sabe"
+P5_11_1,"5.11 ¿Se encuentra satisfecho(a) o insatisfecho(a) con el servicio de…
+Internet?.",1,Varchar2,"[1-3, 8]","1 Satisfecho, 2 Insatisfecho, 3 No cuenta con el servicio, 8 No quiso o no supo responder"
+P5_11_2,"5.11 ¿Se encuentra satisfecho(a) o insatisfecho(a) con el servicio de…
+TV de paga?",1,Varchar2,"[1-3, 8]","1 Satisfecho, 2 Insatisfecho, 3 No cuenta con el servicio, 8 No quiso o no supo responder"
+P5_11_3,"5.11 ¿Se encuentra satisfecho(a) o insatisfecho(a) con el servicio de…
+Telefonía fija?",1,Varchar2,"[1-3, 8]","1 Satisfecho, 2 Insatisfecho, 3 No cuenta con el servicio, 8 No quiso o no supo responder"
+FAC_HOG,Factor,5,Number,[60-5419],Factor
+UPM_DIS,Unidad primaria de muestreo,5,Varchar2,[00001-08237],Unidad primaria de muestreo
+EST_DIS,Estrato de diseño muestral,3,Varchar2,[001-340],Estrato de diseño muestral
+DOMINIO,Población rural y urbana,1,Varchar2,"[U,R]",Población rural y urbana
+TLOC,Tamaño de la Localidad,1,Varchar2,[1-4],"1 100,000 y más habitantes, 2 15,000 a 99,999 habitantes, 3 2,500 a 14,999 habitantes, 4 menor a 2500 habitantes"
+ESTRATO,Estrato socioeconómico,1,Varchar2,[1-4],"1 Bajo, 2 Medio bajo, 3 Medio alto, 4 Alto"
+ENT,Entidad ,2,Varchar2,[01-32],"01 Aguascalientes, 02 Baja California, 03 Baja California Sur, 04 Campeche, 05 Coahuila de Zaragoza, 06 Colimia, 07 Chiapas, 08 Chihuahua, 09 Ciudad de México, 10 Durango, 11 Guanajuato, 12 Guerrero, 13 Hidalgo, 14 Jalisco, 15 Estado de México, 16 Michoacán de Ocampo, 17 Morelos, 18 Nayarit, 19 Nuevo León, 20 Oaxaca, 21 Puebla, 22 Querétaro, 23 Quintana Roo, 24 San Luis Potosí, 25 Sinaloa, 26 Sonora, 27 Tabasco, 28 Tamaulipas, 29 Tlaxcala, 30 Veracruz de Ingancio de la Llave, 31 Yucatán, 32 Zacatecas"

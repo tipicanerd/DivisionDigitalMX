@@ -1,0 +1,30 @@
+identifier: MEX-INEGI.EEC3.04-ENDUTIH-2020
+
+title: Encuesta Nacional sobre Disponibilidad y Uso de Tecnologías de la Información en los Hogares (ENDUTIH) cifras al 2020
+
+description: La encuesta proporciona información estadística que permite conocer la disponibilidad y el uso de las tecnologías de la información y las comunicaciones en los hogares por los individuos de seis o más años de edad que viven en los dominios de interés. La encuesta está diseñada para dar información de TIC para una cobertura geográfica nacional, nacional urbano, nacional rural y entidad. 
+Para la selección de la muestra de la encuesta se utilizó la Muestra Maestra del Marco Nacional de Viviendas 2012, este último, construido a partir de la información cartográfica y demográfica que se obtuvo del Censo de Población y Vivienda 2010. 
+
+nota: A partir de la publicación de los resultados del 2021 el INEGI generó una estimación de la población objeto de estudio, con base en la propia actualización de la Muestra Maestra, para mejorar la calidad estadística de la información que publica. Los factores de expansión se actualizaron con base en dicha estimación.
+
+modified: 2022-07-04
+
+publisher: Instituto Nacional de Estadística y Geografía, INEGI
+
+mbox: atencion.usuarios@inegi.org.mx
+
+license: https://www.inegi.org.mx/inegi/terminos.html
+
+dataDictionary: 
+
+keyword: "computadora", "internet", "telefonía móvil", "usuarios de TIC", "hogares"
+
+contactpoint: Mtro. J. Armando Aguiar Rodríguez, 800 111 4634
+
+temporal: 2020
+
+spatial: Estados Unidos Mexicanos
+
+accrualPeriodicity: Anualmente
+
+distribution: https://wwww.inegi.org.mx/programas/dutih/2020/

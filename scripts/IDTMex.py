@@ -49,9 +49,9 @@ def componente_uso(grupo: pd.DataFrame)->float:
     #Tipo de conexion a internet
     respondieron = grupo[~grupo.P4_5.isna()]
     ## Conexion alambrica
-    alambrica = grupo[((grupo.P4_5==1)|(grupo.P4_5==3))&(grupo.P2_1==1)].FAC_HOG.sum()/respondieron.FAC_HOG.sum()
+    alambrica = grupo[((grupo.P4_5==1)|(grupo.P4_5==3))].FAC_HOG.sum()/respondieron.FAC_HOG.sum()
     ## Conexion inalambrica
-    inalambrica = grupo[((grupo.P4_5==2)|(grupo.P4_5==3))&(grupo.P2_1==1)].FAC_HOG.sum()/respondieron.FAC_HOG.sum()
+    inalambrica = grupo[((grupo.P4_5==2)|(grupo.P4_5==3))].FAC_HOG.sum()/respondieron.FAC_HOG.sum()
 
     return np.mean([internet, alambrica, inalambrica])
 

@@ -8,12 +8,15 @@ def componente_acceso(hogares: pd.DataFrame)->float:
     Micheli Thirión, J., y Valle Zarate, J. (2018)
     ----------------------------------------------
     
-    PARAMESTROS:
+    PARAMETROS:
     @hogares: DataFrame con informacion de vivienda, hogar y residente
 
     REGRESA:
     Flotante en el intervalo [0,1] que representa el valor de esta componente
     """
+
+    #Eliminamos los duplicados
+    hogares = hogares.drop_duplicates(subset=["UPM","VIV_SEL","HOGAR"])
 
     #Porcentaje de hogares con telefonia fija
     tel_fija = hogares[hogares.P5_5==1].FAC_HOG.sum()/hogares[~hogares.P5_5.isna()].FAC_HOG.sum()
@@ -29,22 +32,25 @@ def componente_acceso(hogares: pd.DataFrame)->float:
 
     return np.mean([tel_fija,cel,compu, internet])
 
-def componente_uso(hogares: pd.DataFrame)->float:
+def componente_uso(residentes: pd.DataFrame)->float:
     """
     Funcion para calcular el valor de la componente 
     de uso inspirado en el IDTMex propuesto por 
     Micheli Thirión, J., y Valle Zarate, J. (2018)
     ----------------------------------------------
     
-    PARAMESTROS:
-    @hogares: DataFrame con informacion de vivienda, hogar y residente
+    PARAMETROS:
+    @residentes: DataFrame con informacion de vivienda, hogar y residente
 
     REGRESA:
     Flotante en el intervalo [0,1] que representa el valor de esta componente
     """
 
+    #Eliminamos los duplicados
+    hogares = residentes.drop_duplicates(subset=["UPM","VIV_SEL","HOGAR"])
+
     #Porcentaje de residentes usuarios de Internet
-    internet = hogares[hogares.P3_9_2==1].FAC_HOGAR.sum()/hogares[~hogares.P3_9_2.isna()].FAC_HOGAR.sum()
+    internet = residentes[residentes.P3_9_2==1].FAC_HOGAR.sum()/residentes[~residentes.P3_9_2.isna()].FAC_HOGAR.sum()
 
     #Tipo de conexion a internet
     respondieron = hogares[~hogares.P4_5.isna()]
@@ -55,28 +61,28 @@ def componente_uso(hogares: pd.DataFrame)->float:
 
     return np.mean([internet, alambrica, inalambrica])
 
-def componente_aptitudes(hogares: pd.DataFrame)->float:
+def componente_aptitudes(residentes: pd.DataFrame)->float:
     """
     Funcion para calcular el valor de la componente 
     de aptitudes inspirado en el IDTMex propuesto por 
     Micheli Thirión, J., y Valle Zarate, J. (2018)
     ----------------------------------------------
     
-    PARAMESTROS:
-    @hogares: DataFrame con informacion de vivienda, hogar y residente
+    PARAMETROS:
+    @residentes: DataFrame con informacion de residente
 
     REGRESA:
     Flotante en el intervalo [0,1] que representa el valor de esta componente
     """
 
     #Porcentaje de residentes adultos que cursaron al menos la primaria 
-    alfabetas_proxy = hogares[(hogares.EDAD>=18)&(hogares.NIVEL>=2)].FAC_HOGAR.sum()/hogares[hogares.EDAD>=18].FAC_HOGAR.sum()
+    alfabetas_proxy = residentes[(residentes.EDAD>=18)&(residentes.NIVEL>=2)].FAC_HOGAR.sum()/residentes[residentes.EDAD>=18].FAC_HOGAR.sum()
 
     #Porcentaje de residentes adultos que cursaron al menos el bachillerato 
-    bachillerato = hogares[(hogares.EDAD>=18)&(hogares.NIVEL>=6)].FAC_HOGAR.sum()/hogares[hogares.EDAD>=18].FAC_HOGAR.sum()
+    bachillerato = residentes[(residentes.EDAD>=18)&(residentes.NIVEL>=6)].FAC_HOGAR.sum()/residentes[residentes.EDAD>=18].FAC_HOGAR.sum()
 
     #Porcentaje de residentes mayores de 23 que fueron a la universidad
-    universidad = hogares[(hogares.EDAD>=23)&(hogares.NIVEL>=8)].FAC_HOGAR.sum()/hogares[hogares.EDAD>=23].FAC_HOGAR.sum()
+    universidad = residentes[(residentes.EDAD>=23)&(residentes.NIVEL>=8)].FAC_HOGAR.sum()/residentes[residentes.EDAD>=23].FAC_HOGAR.sum()
 
     return np.mean([alfabetas_proxy,bachillerato,universidad])
 
@@ -87,11 +93,11 @@ def IDTMex(hogares: pd.DataFrame)->float:
     Micheli Thirión, J., y Valle Zarate, J. (2018)
     ----------------------------------------------
     
-    PARAMESTROS:
+    PARAMETROS:
     @hogares: DataFrame con informacion de vivienda, hogar y residente
 
     REGRESA:
-    Flotante en el intervalo [0,1] que representa el valor del indice
+    Flotante en el intervalo [0,10] que representa el valor del indice
     """
     acceso = componente_acceso(hogares)
     uso = componente_uso(hogares)

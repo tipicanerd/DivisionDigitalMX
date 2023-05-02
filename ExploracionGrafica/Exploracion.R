@@ -336,7 +336,7 @@ ggplot(habilidades_compu, aes(y=Habilidad, weight=total/1e3))+
     theme(aspect.ratio = 0.73)
 
 ggsave(
-    filename= "./Graficas/G11_uso_compu.pdf",
+    filename= "./Graficas/G11_habilidad_compu.pdf",
     device="pdf", dpi="retina",
     width=19.17, height=14, units="cm"
 )

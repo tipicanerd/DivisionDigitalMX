@@ -3,10 +3,12 @@ library(pacman)
 
 p_load(
     dplyr,
+    ggExtra,
     ggplot2,
     hrbrthemes,
     tidyr,
     tidyverse,
+    treemap,
     paletteer,
     plyr,
     reshape2
@@ -199,13 +201,12 @@ grupo11_usu2 <- endutih_usu2 %>% dplyr::filter(Grupo==11)
 g11_pisos <- grupo11_viv %>% group_by(P1_1) %>% dplyr::summarise(Total= sum(FAC_VIV))
 g11_pisos$P1_1 <- as.factor(g11_pisos$P1_1)
 
-ggplot(g11_pisos, mapping = aes(x=P1_1,y=Total/1e5), )+
+ggplot(g11_pisos, mapping = aes(x=P1_1,y=Total/1e3), )+
     geom_bar(stat="identity", fill=main)+
     labs(
         title = "Material de piso de las viviendas en el Grupo 11",
-        subtitle = "(Cada 10,000 viviendas)",
         caption = nota,
-        x="Material", y="Viviendas"
+        x="Material", y="Viviendas (en miles)"
         )+
     scale_y_continuous(n.breaks = 7)+
     scale_x_discrete(
@@ -226,9 +227,8 @@ ggplot(grupo11_res, aes(EDAD, weight=FAC_HOGAR/1e3))+
     geom_vline( xintercept =sum(grupo11_res$FAC_HOGAR*grupo11_res$EDAD)/sum(grupo11_res$FAC_HOGAR), color=lmain)+
     labs(
         title = "Distribución de edad en el grupo 11",
-        subtitle = "(Cada 1,000 residentes)",
         caption = nota,
-        x="Edad", y="Frecuencia"
+        x="Edad", y="Residentes (en miles)"
     )+
     scale_y_continuous(n.breaks = 10)+
     scale_x_continuous(n.breaks = 13)+
@@ -247,15 +247,15 @@ aprendizaje_compu <- grupo11_usu %>%
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
     pivot_longer(-FAC_PER, names_to = "Metodo",  values_to = "total", values_drop_na = TRUE) %>%
+    filter(total==1) %>%
     mutate(total = total*FAC_PER)
 
 ggplot(aprendizaje_compu, aes(y=Metodo, weight=total/1e3))+
     geom_bar(color=lmain, fill=main)+
     labs(
         title = "Modo de aprendizaje para el uso de computadora del grupo 11",
-        subtitle = "(Cada 1,000 residentes)",
         caption = nota,
-        y="Modo", x="Frecuencia"
+        y="Modo", x="Residentes (en miles)"
     )+
     scale_y_discrete(labels=c("Cuenta propia", "Trabajo", "Escuela", "Cursos pagados", "Cursos gratuitos", "Parientes", "Otro"))+
     scale_x_continuous(n.breaks = 8)+
@@ -275,6 +275,7 @@ lugares_compu <- grupo11_usu %>%
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
     pivot_longer(-FAC_PER, names_to = "Lugar",  values_to = "total", values_drop_na = TRUE) %>%
+    filter(total==1) %>%
     mutate(total = total*FAC_PER)
 
 lugares <- c(
@@ -289,9 +290,8 @@ ggplot(lugares_compu, aes(y=Lugar, weight=total/1e3))+
     geom_bar(color=lmain, fill=main)+
     labs(
         title = "Lugares de uso de computadora del grupo 11",
-        subtitle = "(Cada 1,000 residentes)",
         caption = nota,
-        y="Lugar", x="Frecuencia"
+        y="Lugar", x="Residentes (en miles)"
     )+
     scale_y_discrete(labels=lugares)+
     scale_x_continuous(n.breaks = 10)+
@@ -311,6 +311,7 @@ habilidades_compu <- grupo11_usu %>%
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
     pivot_longer(-FAC_PER, names_to = "Habilidad",  values_to = "total", values_drop_na = TRUE) %>%
+    filter(total==1) %>%
     mutate(total = total*FAC_PER)
 
 habilidades <- c(
@@ -326,9 +327,8 @@ ggplot(habilidades_compu, aes(y=Habilidad, weight=total/1e3))+
     geom_bar(color=lmain, fill=main)+
     labs(
         title = "Habilidades con la computadora del grupo 11",
-        subtitle = "(Cada 1,000 residentes)",
         caption = nota,
-        y="Habilidad", x="Frecuencia"
+        y="Habilidad", x="Residentes (en miles)"
     )+
     scale_y_discrete(labels=habilidades)+
     scale_x_continuous(n.breaks = 10)+
@@ -347,6 +347,7 @@ usos_compu <- grupo11_usu %>%
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
     pivot_longer(-FAC_PER, names_to = "Uso",  values_to = "total", values_drop_na = TRUE) %>%
+    filter(total==1) %>%
     mutate(total = total*FAC_PER)
 
 usos <- c(
@@ -360,9 +361,8 @@ ggplot(usos_compu, aes(y=Uso, weight=total/1e3))+
     geom_bar(color=lmain, fill=main)+
     labs(
         title = "Usos de la computadora del grupo 11",
-        subtitle = "(Cada 1,000 residentes)",
         caption = nota,
-        y="Usos", x="Frecuencia"
+        y="Usos", x="Residentes (en miles)"
     )+
     scale_y_discrete(labels=usos)+
     scale_x_continuous(n.breaks = 10)+
@@ -375,7 +375,129 @@ ggsave(
     width=19.17, height=14, units="cm"
 )
 
+# INTENSIDAD DE USO DE INTERNET
+ggplot(grupo11_usu %>% filter(P7_1==1), aes(P7_4, weight=FAC_PER/1e3))+
+    geom_histogram(color=lmain, fill=main, bins = 12)+
+    labs(
+        title = "Distribución de la intensidad de uso de Internet en el grupo 11",
+        caption = nota,
+        x="Horas de uso en un día", y="Residentes (en miles)"
+    )+
+    scale_y_continuous(n.breaks = 10)+
+    scale_x_continuous(n.breaks = 13)+
+    theme_light()+
+    theme(aspect.ratio = 0.76)
 
+ggsave(
+    filename= "./Graficas/G11_hist_intensidad_internet.pdf",
+    device="pdf", dpi="retina",
+    width=18.5, height=14, units="cm"
+)
+
+#EQUIPO INTERNET
+pregs <- paste("P7_5",1:7, sep="_")
+#grupo11_usu[,pregs] <- as.character(grupo11_usu[,pregs])
+equipo_internet <- grupo11_usu %>% 
+    select(all_of(c("FAC_PER",pregs))) %>%
+    pivot_longer(-FAC_PER, names_to = "Equipo",  values_to = "total", values_drop_na = TRUE) %>%
+    filter(total==1) 
+    
+
+equipos <- c(
+    "Ordenador", "Laptop", "Tablet",
+    "Smartphone", "Televisión", "Consola",
+    "Otro"
+)
+
+
+ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER/1e3))+
+    geom_bar(color=lmain, fill=main)+
+    labs(
+        title = "Equipos donde utiliza Internet el grupo 11",
+        caption = nota,
+        y="Equipos", x="Residentes (en miles)"
+    )+
+    scale_y_discrete(labels=equipos)+
+    scale_x_continuous(n.breaks = 10)+
+    theme_light()+
+    theme(aspect.ratio = 0.73)
+
+ggsave(
+    filename= "./Graficas/G11_equipo_internet.pdf",
+    device="pdf", dpi="retina",
+    width=19.17, height=14, units="cm"
+)
+
+#LUGARES INTERNET
+pregs <- paste("P7_7",1:8, sep="_")
+
+lugar_internet <- grupo11_usu %>% 
+    select(all_of(c("FAC_PER",pregs))) %>%
+    pivot_longer(-FAC_PER, names_to = "Lugar",  values_to = "total", values_drop_na = TRUE) %>%
+    filter(total==1) 
+
+
+lugares <- c(
+    "Hogar", "Trabajo", "Escuela", 
+    "Sitio público\ncon costo", "Sitio público\nsin costo",
+    "Casa de otra\npersona", "Cualquier lugar mediante\nsmartphone",
+    "Otro"
+)
+
+
+ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER/1e3))+
+    geom_bar(color=lmain, fill=main)+
+    labs(
+        title = "Lugares donde utiliza Internet el grupo 11",
+        caption = nota,
+        y="Lugares", x="Residentes (en miles)"
+    )+
+    scale_y_discrete(labels=lugares)+
+    scale_x_continuous(n.breaks = 10)+
+    theme_light()+
+    theme(aspect.ratio = 0.73)
+
+ggsave(
+    filename= "./Graficas/G11_lugar_internet.pdf",
+    device="pdf", dpi="retina",
+    width=19.17, height=14, units="cm"
+)
+
+
+# PROBLEMAS INTERNET
+pregs <- paste("P7_16",1:8, sep="_")
+
+problema_internet <- grupo11_usu %>% 
+    select(all_of(c("FAC_PER",pregs))) %>%
+    pivot_longer(-FAC_PER, names_to = "Problema",  values_to = "total", values_drop_na = TRUE) %>%
+    filter(total==1) 
+
+
+problemas <- c(
+    "Infección por virus", "Exceso de información\nno deseada",
+    "Interrupciones en el servicio", "Lentitud en la transferencia\nde información",
+    "Fraudes con información", "Violación a la privacidad",
+    "Mensajes de personas desconocidas", "Otro"
+)
+
+
+ggplot(problema_internet, aes(y=Problema, weight=FAC_PER/1e3))+
+    geom_bar(color=lmain, fill=main)+
+    labs(
+        title = "Problemas de navegación en Internet que presenta el grupo 11",
+        caption = nota,
+        y="Lugares", x="Residentes (en miles)"
+    )+
+    scale_y_discrete(labels=problemas)+
+    scale_x_continuous(n.breaks = 10)+
+    theme_light()+
+    theme(aspect.ratio = 0.73)
+
+ggsave(
+    filename= "./Graficas/G11_problema_internet.pdf",
+    device="pdf", dpi="retina",
+    width=19.17, height=14, units="cm"
+)
 
 
 

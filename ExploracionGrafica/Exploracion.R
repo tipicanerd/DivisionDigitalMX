@@ -65,6 +65,422 @@ sicolor <- "steelblue2"
 palette<-"ggthemes::excel_Gallery"
 cpalette <- "ggthemes::Classic Blue"
 
+#### NACIONAL ####
+pisos <- c("1"="Tierra","2"="Cemento, firme", "3"="Madera,mosaico,\notro")
+
+ggplot(endutih_vivhogar, mapping = aes(y=as.factor(P1_1),x=FAC_VIV/1e3), )+
+    geom_col(fill=main, color=lmain)+
+    labs(
+        title = "Material de piso de las viviendas",
+        subtitle = "Nacional",
+        caption = nota,
+        y="Material", x="Viviendas (en miles)"
+    )+
+    scale_x_continuous(n.breaks = 7)+
+    scale_y_discrete(
+        labels=pisos
+    )+
+    theme_light()+
+    theme(axis.text.x = element_text(angle=90))
+
+ggsave(
+    filename= "./Graficas/NACIONAL_material_piso.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+# EDAD 1+ 3.322*log10(sum(endutih_res$FAC_HOGAR))
+ggplot(endutih_res, aes(EDAD, weight=FAC_HOGAR/1e3))+
+    geom_histogram(color=lmain, fill=main, bins = 28)+
+    geom_vline( xintercept =sum(endutih_res$FAC_HOGAR*endutih_res$EDAD)/sum(endutih_res$FAC_HOGAR), color=lmain)+
+    labs(
+        title = "Distribución de edad",
+        subtitle = "Nacional",
+        caption = nota,
+        x="Edad", y="Residentes (en miles)"
+    )+
+    scale_y_continuous(n.breaks = 10)+
+    scale_x_continuous(n.breaks = 13)+
+    theme_light()+
+    theme()
+
+ggsave(
+    filename= "./Graficas/NACIONAL_hist_edad.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+#MODALIDAD INTERNET
+pregs <- paste("P5_7",1:8, sep="_")
+modalidad_servicio <- endutih_vivhogar %>% 
+    filter(P5_6_5!=1) %>% 
+    select(all_of(c("FAC_HOG",pregs))) %>%
+    pivot_longer(-FAC_HOG, names_to = "Modalidad",  values_to = "resultado", values_drop_na = TRUE) %>%
+    filter(resultado==1) 
+
+modalidades <- c(
+    "TV de paga, telefonía fija,\nInternet y telefonía móvil",
+    "TV de paga, telefonía fija\ne Internet",
+    "TV de paga y telefonía fija",
+    "TV de paga e Internet",
+    "Telefonía fija e Internet",
+    "Solo TV de paga",
+    "Solo telefonía fija",
+    "Solo Internet"
+)
+
+ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
+    geom_bar(color=lmain, fill=main)+
+    labs(
+        title = "Modalidad de contratación de servicios",
+        subtitle = "Nacional",
+        caption = nota,
+        y="Modalidad", x="Hogares (en miles)"
+    )+
+    scale_y_discrete(labels=modalidades)+
+    scale_x_continuous(n.breaks = 8)+
+    theme_light()+
+    theme()
+
+ggsave(
+    filename= "./Graficas/NACIONAL_modalidad_compu.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+#Aprendizaje compu
+pregs <- paste("P6_6",1:7, sep="_")
+aprendizaje_compu <- endutih_usu %>% 
+    filter(P6_1==1) %>% 
+    select(all_of(c("FAC_PER",pregs))) %>%
+    pivot_longer(-FAC_PER, names_to = "Metodo",  values_to = "resultado", values_drop_na = TRUE) %>%
+    filter(resultado==1)
+
+modos <- c("Cuenta propia", "Trabajo", "Escuela", "Cursos pagados", "Cursos gratuitos", "Parientes", "Otro")
+
+ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER/1e3))+
+    geom_bar(color=lmain, fill=main)+
+    labs(
+        title = "Modo de aprendizaje para el uso de computadora",
+        subtitle = "Nacional",
+        caption = nota,
+        y="Modo", x="Residentes (en miles)"
+    )+
+    scale_y_discrete(labels=modos)+
+    scale_x_continuous(n.breaks = 8)+
+    theme_light()+
+    theme()
+
+ggsave(
+    filename= "./Graficas/NACIONAL_modo_compu.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+#Lugares
+pregs <- paste("P6_7",1:8, sep="_")
+
+lugares_compu <- endutih_usu %>% 
+    filter(P6_1==1) %>% 
+    select(all_of(c("FAC_PER",pregs))) %>%
+    pivot_longer(-FAC_PER, names_to = "Lugar",  values_to = "resultado", values_drop_na = TRUE) %>%
+    filter(resultado==1)
+
+lugares <- c(
+    "Hogar", "Trabajo", "Escuela",
+    "Sitio público\ncon costo", "Sitio público\nsin costo",
+    "Casa de otra persona", "Cualquier otro lugar\ncon una laptop",
+    "Otro"
+)
+
+
+ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER/1e3))+
+    geom_bar(color=lmain, fill=main)+
+    labs(
+        title = "Lugares de uso de computadora",
+        subtitle = "NACIONAL",
+        caption = nota,
+        y="Lugar", x="Residentes (en miles)"
+    )+
+    scale_y_discrete(labels=lugares)+
+    scale_x_continuous(n.breaks = 10)+
+    theme_light()+
+    theme()
+
+ggsave(
+    filename= "./Graficas/NACIONAL_lugar_compu.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+
+#Habilidades
+pregs <- paste("P6_8",1:10, sep="_")
+habilidades_compu <- endutih_usu %>% 
+    filter(P6_1==1) %>% 
+    select(all_of(c("FAC_PER",pregs))) %>%
+    pivot_longer(-FAC_PER, names_to = "Habilidad",  values_to = "resultado", values_drop_na = TRUE) %>%
+    filter(resultado==1) 
+
+habilidades <- c(
+    "Enviar y recibir\ncorreo", "Descargar contenidos\nde Internet",
+    "Copiar archivos entre directorios", "Crear archivos de texto",
+    "Crear hojas de cáculo", "Crear presentaciones",
+    "Instalar dispositivos\nperiféricos", "Crear o usar\nbases de datos",
+    "Programar en lenguaje\nespecializado", "Otras"
+)
+
+
+ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER/1e3))+
+    geom_bar(color=lmain, fill=main)+
+    labs(
+        title = "Habilidades con la computadora",
+        subtitle = "Nacional",
+        caption = nota,
+        y="Habilidad", x="Residentes (en miles)"
+    )+
+    scale_y_discrete(labels=habilidades)+
+    scale_x_continuous(n.breaks = 10)+
+    theme_light()+
+    theme()
+
+ggsave(
+    filename= "./Graficas/NACIONAL_habilidad_compu.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+#Uso
+pregs <- paste("P6_9",1:6, sep="_")
+usos_compu <- endutih_usu %>% 
+    filter(P6_1==1) %>% 
+    select(all_of(c("FAC_PER",pregs))) %>%
+    pivot_longer(-FAC_PER, names_to = "Uso",  values_to = "resultado", values_drop_na = TRUE) %>%
+    filter(resultado==1)
+
+usos <- c(
+    "Actividades laborales", "Labores escolares",
+    "Medio de capacitación", "Entretenimiento",
+    "Acceso a Internet", "Otro"
+)
+
+
+ggplot(usos_compu, aes(y=Uso, weight=FAC_PER/1e3))+
+    geom_bar(color=lmain, fill=main)+
+    labs(
+        title = "Usos de la computadora",
+        subtitle = "Nacional",
+        caption = nota,
+        y="Usos", x="Residentes (en miles)"
+    )+
+    scale_y_discrete(labels=usos)+
+    scale_x_continuous(n.breaks = 10)+
+    theme_light()+
+    theme()
+
+ggsave(
+    filename= "./Graficas/NACIONAL_uso_compu.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+# INTENSIDAD DE USO DE INTERNET
+ggplot(endutih_usu %>% filter(P7_1==1), aes(P7_4, weight=FAC_PER/1e3))+
+    geom_histogram(color=lmain, fill=main, bins = 12)+
+    labs(
+        title = "Distribución de la intensidad de uso de Internet",
+        subtitle = "Nacional",
+        caption = nota,
+        x="Horas de uso en un día", y="Residentes (en miles)"
+    )+
+    scale_y_continuous(n.breaks = 10)+
+    scale_x_continuous(n.breaks = 13)+
+    theme_light()+
+    theme()
+
+ggsave(
+    filename= "./Graficas/NACIONAL_hist_intensidad_internet.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+#EQUIPO INTERNET
+pregs <- paste("P7_5",1:7, sep="_")
+#estrato1_usu[,pregs] <- as.character(estrato1_usu[,pregs])
+equipo_internet <- endutih_usu %>% 
+    select(all_of(c("FAC_PER",pregs))) %>%
+    pivot_longer(-FAC_PER, names_to = "Equipo",  values_to = "resultado", values_drop_na = TRUE) %>%
+    filter(resultado==1) 
+
+
+equipos <- c(
+    "Ordenador", "Laptop", "Tablet",
+    "Smartphone", "Televisión", "Consola",
+    "Otro"
+)
+
+
+ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER/1e3))+
+    geom_bar(color=lmain, fill=main)+
+    labs(
+        title = "Equipos donde utiliza Internet",
+        subtitle = "Nacional",
+        caption = nota,
+        y="Equipos", x="Residentes (en miles)"
+    )+
+    scale_y_discrete(labels=equipos)+
+    scale_x_continuous(n.breaks = 10)+
+    theme_light()+
+    theme()
+
+ggsave(
+    filename= "./Graficas/NACIONAL_equipo_internet.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+#LUGARES INTERNET
+pregs <- paste("P7_7",1:8, sep="_")
+
+lugar_internet <- endutih_usu %>% 
+    select(all_of(c("FAC_PER",pregs))) %>%
+    pivot_longer(-FAC_PER, names_to = "Lugar",  values_to = "resultado", values_drop_na = TRUE) %>%
+    filter(resultado==1) 
+
+
+lugares <- c(
+    "Hogar", "Trabajo", "Escuela", 
+    "Sitio público\ncon costo", "Sitio público\nsin costo",
+    "Casa de otra\npersona", "Cualquier lugar mediante\nsmartphone",
+    "Otro"
+)
+
+
+ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER/1e3))+
+    geom_bar(color=lmain, fill=main)+
+    labs(
+        title = "Lugares donde utiliza Internet",
+        subtitle = "Nacional",
+        caption = nota,
+        y="Lugares", x="Residentes (en miles)"
+    )+
+    scale_y_discrete(labels=lugares)+
+    scale_x_continuous(n.breaks = 10)+
+    theme_light()+
+    theme()
+
+ggsave(
+    filename= "./Graficas/NACIONAL_lugar_internet.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+
+# PROBLEMAS INTERNET
+pregs <- paste("P7_16",1:8, sep="_")
+
+problema_internet <- endutih_usu %>% 
+    select(all_of(c("FAC_PER",pregs))) %>%
+    pivot_longer(-FAC_PER, names_to = "Problema",  values_to = "resultado", values_drop_na = TRUE) %>%
+    filter(resultado==1) 
+
+
+problemas <- c(
+    "Infección por virus", "Exceso de información\nno deseada",
+    "Interrupciones en el servicio", "Lentitud en la transferencia\nde información",
+    "Fraudes con información", "Violación a la privacidad",
+    "Mensajes de personas desconocidas", "Otro"
+)
+
+
+ggplot(problema_internet, aes(y=Problema, weight=FAC_PER/1e3))+
+    geom_bar(color=lmain, fill=main)+
+    labs(
+        title = "Problemas de navegación en Internet",
+        subtitle = "Nacional",
+        caption = nota,
+        y="Lugares", x="Residentes (en miles)"
+    )+
+    scale_y_discrete(labels=problemas)+
+    scale_x_continuous(n.breaks = 10)+
+    theme_light()+
+    theme()
+
+ggsave(
+    filename= "./Graficas/NACIONAL_problema_internet.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+# TIPO DE CONTRATACION CELULAR
+pregs <- paste("P8_7", 1:3, sep="_")
+
+plan_cel <- endutih_usu2 %>% 
+    select(all_of(c("FAC_PER",pregs))) %>%
+    pivot_longer(-FAC_PER, names_to = "Plan",  values_to = "resultado", values_drop_na = TRUE) %>%
+    filter(resultado==1) 
+
+
+planes <- c(
+    "Recarga tiempo aire", "Paquetes", "Plan tarifario"
+)
+
+
+ggplot(plan_cel, aes(y=Plan, weight=FAC_PER/1e3))+
+    geom_bar(color=lmain, fill=main)+
+    labs(
+        title = "Planes de contratación de servicio de celular",
+        subtitle = "Nacional",
+        caption = nota,
+        y="Planes", x="Residentes (en miles)"
+    )+
+    scale_y_discrete(labels=planes)+
+    scale_x_continuous(n.breaks = 10)+
+    theme_light()+
+    theme()
+
+ggsave(
+    filename= "./Graficas/NACIONAL_plan_cel.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+# USO DE APPS DE CELULAR
+pregs <- paste("P8_12", 1:9, sep="_")
+
+
+uso_cel <- endutih_usu2 %>% 
+    select(all_of(c("FAC_PER",pregs))) %>%
+    pivot_longer(-FAC_PER, names_to = "Uso",  values_to = "resultado", values_drop_na = TRUE) %>%
+    filter(resultado==1) 
+
+usos <- c(
+    "Mensajería instantánea", "Contenidos de audio y video", "Adquirir bienes o servicios",
+    "Tránsito y navegación asistida", "Jugar", "Redes sociales", "Banca móvil",
+    "Editar fotos o videos", "Otros"
+)
+
+
+ggplot(uso_cel, aes(y=Uso, weight=FAC_PER/1e3))+
+    geom_bar(color=lmain, fill=main)+
+    labs(
+        title = "Uso de aplicaciones móviles",
+        subtitle = "Nacional",
+        caption = nota,
+        y="Planes", x="Residentes (en miles)"
+    )+
+    scale_y_discrete(labels=usos)+
+    scale_x_continuous(n.breaks = 10)+
+    theme_light()+
+    theme()
+
+ggsave(
+    filename= "./Graficas/NACIONAL_uso_cel.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+#-----------------------------------------------------------#
 
 #### TODOS LOS ESTRATOS ####
 
@@ -272,7 +688,7 @@ ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/BAJO_modo_compu.pdf",
+    filename= "./Graficas/BAJO_modalidad_compu.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -621,10 +1037,10 @@ estrato2_usu2 <- endutih_usu2 %>% filter(ESTRATO==2)
 # MATERIAL DE PISOS
 pisos <- c("1"="Tierra","2"="Cemento, firme", "3"="Madera,mosaico,\notro")
 
-ggplot(estrato2_viv, mapping = aes(y=as.factor(P1_1),x=FAC_HOG/1e3), )+
+ggplot(estrato2_viv, mapping = aes(y=as.factor(P1_1),x=FAC_VIV/1e3), )+
     geom_col(fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free",
+        ~Grupo, ncol = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -701,7 +1117,7 @@ ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
         y="Modalidad", x="Hogares (en miles)"
     )+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free",
+        ~Grupo, ncol = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     scale_y_discrete(labels=modalidades)+
@@ -710,7 +1126,7 @@ ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOBAJO_modo_compu.pdf",
+    filename= "./Graficas/MEDIOBAJO_modalidad_compu.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -728,7 +1144,7 @@ modos <- c("Cuenta propia", "Trabajo", "Escuela", "Cursos pagados", "Cursos grat
 ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free",
+        ~Grupo, ncol = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -768,7 +1184,7 @@ lugares <- c(
 ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free",
+        ~Grupo, ncol = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -809,7 +1225,7 @@ habilidades <- c(
 ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free",
+        ~Grupo, ncol = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -847,7 +1263,7 @@ usos <- c(
 ggplot(usos_compu, aes(y=Uso, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free",
+        ~Grupo, ncol = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -910,7 +1326,7 @@ equipos <- c(
 ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free",
+        ~Grupo, ncol = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -950,7 +1366,7 @@ lugares <- c(
 ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free",
+        ~Grupo, ncol = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -991,7 +1407,7 @@ problemas <- c(
 ggplot(problema_internet, aes(y=Problema, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free",
+        ~Grupo, ncol = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1028,7 +1444,7 @@ planes <- c(
 ggplot(plan_cel, aes(y=Plan, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free",
+        ~Grupo, ncol = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1067,7 +1483,7 @@ usos <- c(
 ggplot(uso_cel, aes(y=Uso, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free",
+        ~Grupo, ncol = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1100,10 +1516,10 @@ estrato3_usu2 <- endutih_usu2 %>% filter(ESTRATO==3)
 # MATERIAL DE PISOS
 pisos <- c("1"="Tierra","2"="Cemento, firme", "3"="Madera,mosaico,\notro")
 
-ggplot(estrato3_viv, mapping = aes(y=as.factor(P1_1),x=FAC_HOG/1e3), )+
+ggplot(estrato3_viv, mapping = aes(y=as.factor(P1_1),x=FAC_VIV/1e3), )+
     geom_col(fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1180,7 +1596,7 @@ ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
         y="Modalidad", x="Hogares (en miles)"
     )+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     scale_y_discrete(labels=modalidades)+
@@ -1189,7 +1605,7 @@ ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOALTO_modo_compu.pdf",
+    filename= "./Graficas/MEDIOALTO_modalidad_compu.pdf",
     device="pdf", dpi="retina",
     width=48, height=27, units="cm"
 )
@@ -1207,7 +1623,7 @@ modos <- c("Cuenta propia", "Trabajo", "Escuela", "Cursos pagados", "Cursos grat
 ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1247,7 +1663,7 @@ lugares <- c(
 ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1288,7 +1704,7 @@ habilidades <- c(
 ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1326,7 +1742,7 @@ usos <- c(
 ggplot(usos_compu, aes(y=Uso, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1388,7 +1804,7 @@ equipos <- c(
 ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1428,7 +1844,7 @@ lugares <- c(
 ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1469,7 +1885,7 @@ problemas <- c(
 ggplot(problema_internet, aes(y=Problema, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1506,7 +1922,7 @@ planes <- c(
 ggplot(plan_cel, aes(y=Plan, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1545,7 +1961,7 @@ usos <- c(
 ggplot(uso_cel, aes(y=Uso, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1578,10 +1994,10 @@ estrato4_usu2 <- endutih_usu2 %>% filter(ESTRATO==4)
 # MATERIAL DE PISOS
 pisos <- c("1"="Tierra","2"="Cemento, firme", "3"="Madera,mosaico,\notro")
 
-ggplot(estrato4_viv, mapping = aes(y=as.factor(P1_1),x=FAC_HOG/1e3), )+
+ggplot(estrato4_viv, mapping = aes(y=as.factor(P1_1),x=FAC_VIV/1e3), )+
     geom_col(fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1658,7 +2074,7 @@ ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
         y="Modalidad", x="Hogares (en miles)"
     )+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     scale_y_discrete(labels=modalidades)+
@@ -1667,7 +2083,7 @@ ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/ALTO_modo_compu.pdf",
+    filename= "./Graficas/ALTO_modalidad_compu.pdf",
     device="pdf", dpi="retina",
     width=48, height=27, units="cm"
 )
@@ -1685,7 +2101,7 @@ modos <- c("Cuenta propia", "Trabajo", "Escuela", "Cursos pagados", "Cursos grat
 ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1725,7 +2141,7 @@ lugares <- c(
 ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1766,7 +2182,7 @@ habilidades <- c(
 ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1804,7 +2220,7 @@ usos <- c(
 ggplot(usos_compu, aes(y=Uso, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1866,7 +2282,7 @@ equipos <- c(
 ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1906,7 +2322,7 @@ lugares <- c(
 ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1947,7 +2363,7 @@ problemas <- c(
 ggplot(problema_internet, aes(y=Problema, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -1984,7 +2400,7 @@ planes <- c(
 ggplot(plan_cel, aes(y=Plan, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
@@ -2023,7 +2439,7 @@ usos <- c(
 ggplot(uso_cel, aes(y=Uso, weight=FAC_PER/1e3))+
     geom_bar(color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "free_x",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(

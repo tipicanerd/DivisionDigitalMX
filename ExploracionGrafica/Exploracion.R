@@ -49,6 +49,9 @@ estados <- read.csv("../ConjuntosDatos/CodigoEdos.csv", stringsAsFactors = TRUE)
 #COMPLETA
 endutih_completa <- merge(endutih_vivhogar, select(endutih_res, select= -contains(c("UPM_DIS","ESTRATO","ENT","DOMINIO", "EST_DIS", "TLOC"))), by = c("UPM","VIV_SEL", "HOGAR") )
 
+#IDTMex ESTADO
+IDTMex_grupo_edo <- read.csv("../ConjuntosDatos/IDTMex_grupos_edo.csv", stringsAsFactors = TRUE)
+
 
 #Variables universales
 nota <- "Nota: Elaboración propia con datos de la ENDUTIH (2020)"
@@ -66,17 +69,20 @@ palette<-"ggthemes::excel_Gallery"
 cpalette <- "ggthemes::Classic Blue"
 
 #### NACIONAL ####
+
+path <- "./Graficas/NACIONAL/"
+
 pisos <- c("1"="Tierra","2"="Cemento, firme", "3"="Madera,mosaico,\notro")
 
-ggplot(endutih_vivhogar, mapping = aes(y=as.factor(P1_1),x=FAC_VIV/1e3), )+
-    geom_col(fill=main, color=lmain)+
+ggplot(endutih_vivhogar, mapping = aes(y=factor(P1_1),weight=FAC_VIV), )+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),fill=main, color=lmain)+
     labs(
         title = "Material de piso de las viviendas",
         subtitle = "Nacional",
         caption = nota,
-        y="Material", x="Viviendas (en miles)"
+        y="Material", x="% Viviendas"
     )+
-    scale_x_continuous(n.breaks = 7)+
+    scale_x_continuous(n.breaks = 10)+
     scale_y_discrete(
         labels=pisos
     )+
@@ -84,28 +90,30 @@ ggplot(endutih_vivhogar, mapping = aes(y=as.factor(P1_1),x=FAC_VIV/1e3), )+
     theme(axis.text.x = element_text(angle=90))
 
 ggsave(
-    filename= "./Graficas/NACIONAL_material_piso.pdf",
+    path = path,
+    filename= "NACIONAL_material_piso.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
 
 # EDAD 1+ 3.322*log10(sum(endutih_res$FAC_HOGAR))
-ggplot(endutih_res, aes(EDAD, weight=FAC_HOGAR/1e3))+
-    geom_histogram(color=lmain, fill=main, bins = 28)+
+ggplot(endutih_res, aes(EDAD, weight=FAC_HOGAR))+
+    geom_histogram(aes(y=after_stat(density)*(100/27)*100), color=lmain, fill=main, bins = 28)+
     geom_vline( xintercept =sum(endutih_res$FAC_HOGAR*endutih_res$EDAD)/sum(endutih_res$FAC_HOGAR), color=lmain)+
     labs(
         title = "Distribución de edad",
         subtitle = "Nacional",
         caption = nota,
-        x="Edad", y="Residentes (en miles)"
+        x="Edad", y="% Residentes"
     )+
     scale_y_continuous(n.breaks = 10)+
-    scale_x_continuous(n.breaks = 13)+
+    scale_x_continuous(n.breaks = 15)+
     theme_light()+
     theme()
 
 ggsave(
-    filename= "./Graficas/NACIONAL_hist_edad.pdf",
+    path = path,
+    filename= "NACIONAL_hist_edad.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -116,7 +124,7 @@ modalidad_servicio <- endutih_vivhogar %>%
     filter(P5_6_5!=1) %>% 
     select(all_of(c("FAC_HOG",pregs))) %>%
     pivot_longer(-FAC_HOG, names_to = "Modalidad",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    filter(resultado==1)
 
 modalidades <- c(
     "TV de paga, telefonía fija,\nInternet y telefonía móvil",
@@ -129,13 +137,13 @@ modalidades <- c(
     "Solo Internet"
 )
 
-ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     labs(
         title = "Modalidad de contratación de servicios",
         subtitle = "Nacional",
         caption = nota,
-        y="Modalidad", x="Hogares (en miles)"
+        y="Modalidad", x="% Hogares"
     )+
     scale_y_discrete(labels=modalidades)+
     scale_x_continuous(n.breaks = 8)+
@@ -143,7 +151,8 @@ ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/NACIONAL_modalidad_compu.pdf",
+    path = path,
+    filename= "NACIONAL_modalidad_compu.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -158,13 +167,13 @@ aprendizaje_compu <- endutih_usu %>%
 
 modos <- c("Cuenta propia", "Trabajo", "Escuela", "Cursos pagados", "Cursos gratuitos", "Parientes", "Otro")
 
-ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     labs(
         title = "Modo de aprendizaje para el uso de computadora",
         subtitle = "Nacional",
         caption = nota,
-        y="Modo", x="Residentes (en miles)"
+        y="Modo", x="% Residentes"
     )+
     scale_y_discrete(labels=modos)+
     scale_x_continuous(n.breaks = 8)+
@@ -172,7 +181,8 @@ ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/NACIONAL_modo_compu.pdf",
+    path = path,
+    filename= "NACIONAL_modo_compu.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -194,13 +204,13 @@ lugares <- c(
 )
 
 
-ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     labs(
         title = "Lugares de uso de computadora",
         subtitle = "NACIONAL",
         caption = nota,
-        y="Lugar", x="Residentes (en miles)"
+        y="Lugar", x="% Residentes"
     )+
     scale_y_discrete(labels=lugares)+
     scale_x_continuous(n.breaks = 10)+
@@ -208,7 +218,8 @@ ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/NACIONAL_lugar_compu.pdf",
+    path = path,
+    filename= "NACIONAL_lugar_compu.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -231,13 +242,13 @@ habilidades <- c(
 )
 
 
-ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)), color=lmain, fill=main)+
     labs(
         title = "Habilidades con la computadora",
         subtitle = "Nacional",
         caption = nota,
-        y="Habilidad", x="Residentes (en miles)"
+        y="Habilidad", x="% Residentes"
     )+
     scale_y_discrete(labels=habilidades)+
     scale_x_continuous(n.breaks = 10)+
@@ -245,7 +256,8 @@ ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/NACIONAL_habilidad_compu.pdf",
+    path=path,
+    filename= "NACIONAL_habilidad_compu.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -265,13 +277,13 @@ usos <- c(
 )
 
 
-ggplot(usos_compu, aes(y=Uso, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(usos_compu, aes(y=Uso, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     labs(
         title = "Usos de la computadora",
         subtitle = "Nacional",
         caption = nota,
-        y="Usos", x="Residentes (en miles)"
+        y="Usos", x="% Residentes"
     )+
     scale_y_discrete(labels=usos)+
     scale_x_continuous(n.breaks = 10)+
@@ -279,19 +291,20 @@ ggplot(usos_compu, aes(y=Uso, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/NACIONAL_uso_compu.pdf",
+    path=path,
+    filename= "NACIONAL_uso_compu.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
 
 # INTENSIDAD DE USO DE INTERNET
-ggplot(endutih_usu %>% filter(P7_1==1), aes(P7_4, weight=FAC_PER/1e3))+
-    geom_histogram(color=lmain, fill=main, bins = 12)+
+ggplot(endutih_usu %>% filter(P7_1==1), aes(P7_4, weight=FAC_PER))+
+    geom_histogram(aes(y=after_stat(density)*100),color=lmain, fill=main, bins = 12)+
     labs(
         title = "Distribución de la intensidad de uso de Internet",
         subtitle = "Nacional",
         caption = nota,
-        x="Horas de uso en un día", y="Residentes (en miles)"
+        x="Horas de uso en un día", y="% Residentes"
     )+
     scale_y_continuous(n.breaks = 10)+
     scale_x_continuous(n.breaks = 13)+
@@ -299,7 +312,8 @@ ggplot(endutih_usu %>% filter(P7_1==1), aes(P7_4, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/NACIONAL_hist_intensidad_internet.pdf",
+    path=path,
+    filename= "NACIONAL_hist_intensidad_internet.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -320,13 +334,13 @@ equipos <- c(
 )
 
 
-ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     labs(
         title = "Equipos donde utiliza Internet",
         subtitle = "Nacional",
         caption = nota,
-        y="Equipos", x="Residentes (en miles)"
+        y="Equipos", x="% Residentes"
     )+
     scale_y_discrete(labels=equipos)+
     scale_x_continuous(n.breaks = 10)+
@@ -334,7 +348,8 @@ ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/NACIONAL_equipo_internet.pdf",
+    path=path,
+    filename= "NACIONAL_equipo_internet.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -356,13 +371,13 @@ lugares <- c(
 )
 
 
-ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)), color=lmain, fill=main)+
     labs(
         title = "Lugares donde utiliza Internet",
         subtitle = "Nacional",
         caption = nota,
-        y="Lugares", x="Residentes (en miles)"
+        y="Lugares", x="% Residentes"
     )+
     scale_y_discrete(labels=lugares)+
     scale_x_continuous(n.breaks = 10)+
@@ -370,7 +385,7 @@ ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/NACIONAL_lugar_internet.pdf",
+    path=path, filename= "NACIONAL_lugar_internet.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -393,13 +408,13 @@ problemas <- c(
 )
 
 
-ggplot(problema_internet, aes(y=Problema, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(problema_internet, aes(y=Problema, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)), color=lmain, fill=main)+
     labs(
         title = "Problemas de navegación en Internet",
         subtitle = "Nacional",
         caption = nota,
-        y="Lugares", x="Residentes (en miles)"
+        y="Lugares", x="% Residentes"
     )+
     scale_y_discrete(labels=problemas)+
     scale_x_continuous(n.breaks = 10)+
@@ -407,7 +422,7 @@ ggplot(problema_internet, aes(y=Problema, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/NACIONAL_problema_internet.pdf",
+    path=path, filename= "NACIONAL_problema_internet.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -426,13 +441,13 @@ planes <- c(
 )
 
 
-ggplot(plan_cel, aes(y=Plan, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(plan_cel, aes(y=Plan, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)), color=lmain, fill=main)+
     labs(
         title = "Planes de contratación de servicio de celular",
         subtitle = "Nacional",
         caption = nota,
-        y="Planes", x="Residentes (en miles)"
+        y="Planes", x="% Residentes"
     )+
     scale_y_discrete(labels=planes)+
     scale_x_continuous(n.breaks = 10)+
@@ -440,7 +455,7 @@ ggplot(plan_cel, aes(y=Plan, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/NACIONAL_plan_cel.pdf",
+    path=path, filename= "NACIONAL_plan_cel.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -461,13 +476,13 @@ usos <- c(
 )
 
 
-ggplot(uso_cel, aes(y=Uso, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(uso_cel, aes(y=Uso, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)), color=lmain, fill=main)+
     labs(
         title = "Uso de aplicaciones móviles",
         subtitle = "Nacional",
         caption = nota,
-        y="Planes", x="Residentes (en miles)"
+        y="Planes", x="% Residentes"
     )+
     scale_y_discrete(labels=usos)+
     scale_x_continuous(n.breaks = 10)+
@@ -475,7 +490,7 @@ ggplot(uso_cel, aes(y=Uso, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/NACIONAL_uso_cel.pdf",
+    path=path, filename= "NACIONAL_uso_cel.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -483,13 +498,15 @@ ggsave(
 #-----------------------------------------------------------#
 
 #### TODOS LOS ESTRATOS ####
+path = "./Graficas/GRUPOS/"
 
 # DISTRIBUCION EN LOS ESTADOS
 ## Relativo a grupos
 grupos_estado_rel_grupo <- dcast(endutih_vivhogar, Grupo~ENT, fun.aggregate = sum, value.var = "FAC_HOG")
 grupos_estado_rel_grupo[,2:33] <- grupos_estado_rel_grupo[,2:33] / rowSums(grupos_estado_rel_grupo[,2:33])
 grupos_estado_rel_grupo <- grupos_estado_rel_grupo %>% 
-    pivot_longer(-Grupo, names_to = "ENT", values_to = "FAC_HOG")
+    pivot_longer(-Grupo, names_to = "ENT", values_to = "FAC_HOG") %>%
+    filter(FAC_HOG>0)
 
 ggplot(grupos_estado_rel_grupo, aes(as.character(ENT),as.character(Grupo), fill=FAC_HOG*100))+
     geom_tile()+
@@ -509,7 +526,7 @@ ggplot(grupos_estado_rel_grupo, aes(as.character(ENT),as.character(Grupo), fill=
     )
 
 ggsave(
-    filename= "./Graficas/distribucion_entidad_grupos.pdf",
+    path=path, filename= "distribucion_entidad_grupos.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -518,7 +535,8 @@ ggsave(
 grupos_estado_rel_edo <- dcast(endutih_vivhogar, Grupo~ENT, fun.aggregate = sum, value.var = "FAC_HOG")
 grupos_estado_rel_edo[,2:33] <- t(t(grupos_estado_rel_edo[,2:33])/colSums(grupos_estado_rel_edo[,2:33]))
 grupos_estado_rel_edo <- grupos_estado_rel_edo %>% 
-    pivot_longer(-Grupo, names_to = "ENT", values_to = "FAC_HOG")
+    pivot_longer(-Grupo, names_to = "ENT", values_to = "FAC_HOG") %>%
+    filter(FAC_HOG>0)
 
 ggplot(grupos_estado_rel_grupo, aes(as.character(ENT),as.character(Grupo), fill=FAC_HOG*100))+
     geom_tile()+
@@ -538,7 +556,7 @@ ggplot(grupos_estado_rel_grupo, aes(as.character(ENT),as.character(Grupo), fill=
     )
 
 ggsave(
-    filename= "./Graficas/distribucion_grupo_entidad.pdf",
+    path=path, filename= "distribucion_grupo_entidad.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -550,7 +568,7 @@ grupos_trabajo_rel_grupo <- dcast(endutih_res, Grupo~P3_10, fun.aggregate = sum,
 grupos_trabajo_rel_grupo[,2:10] <- grupos_trabajo_rel_grupo[,2:10] / rowSums(grupos_trabajo_rel_grupo[,2:10])
 grupos_trabajo_rel_grupo <- grupos_trabajo_rel_grupo %>% 
     pivot_longer(-Grupo, names_to = "P3_10", values_to = "FAC_HOGAR") %>% 
-    filter(P3_10!="NA")
+    filter(P3_10!="NA"&FAC_HOGAR>0)
 
 ggplot(grupos_trabajo_rel_grupo, aes(y=as.character(P3_10),x=as.character(Grupo), fill=FAC_HOGAR*100))+
     geom_tile()+
@@ -567,7 +585,7 @@ ggplot(grupos_trabajo_rel_grupo, aes(y=as.character(P3_10),x=as.character(Grupo)
     theme(axis.text.x = element_text(angle=90))
 
 ggsave(
-    filename= "./Graficas/distribucion_grupos_trabajo.pdf",
+    path=path, filename= "distribucion_grupos_trabajo.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -578,7 +596,7 @@ grupos_edu_rel_grupo <- dcast(endutih_res, Grupo~NIVEL, fun.aggregate = sum, val
 grupos_edu_rel_grupo[,2:15] <- grupos_edu_rel_grupo[,2:15] / rowSums(grupos_edu_rel_grupo[,2:15])
 grupos_edu_rel_grupo <- grupos_edu_rel_grupo %>% 
     pivot_longer(-Grupo, names_to = "NIVEL", values_to = "FAC_HOGAR") %>% 
-    filter(NIVEL!="NA")
+    filter(NIVEL!="NA" & FAC_HOGAR>0)
 
 ggplot(grupos_edu_rel_grupo, aes(y=as.character(NIVEL),x=as.character(Grupo), fill=FAC_HOGAR*100))+
     geom_tile()+
@@ -595,13 +613,78 @@ ggplot(grupos_edu_rel_grupo, aes(y=as.character(NIVEL),x=as.character(Grupo), fi
     theme(axis.text.x = element_text(angle=90))
 
 ggsave(
-    filename= "./Graficas/distribucion_grupos_edu.pdf",
+    path=path, filename= "distribucion_grupos_edu.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
 
+## Personas que aprendieron a usar la compu en la escuela
+#P6_6_3
+
+compu_edu <- endutih_usu[endutih_usu$P6_6_3==1, c("UPM", "VIV_SEL", "HOGAR","NUM_REN", "FAC_PER")] %>%
+    merge(endutih_res[, c("UPM", "VIV_SEL", "HOGAR","NUM_REN", "NIVEL","Grupo")]) %>%
+    dcast(Grupo~NIVEL, fun.aggregate = sum, value.var = "FAC_PER") %>%
+    select(-c("99"))
+
+compu_edu[,2:13] <- compu_edu[,2:13]/ rowSums(compu_edu[,2:13])
+compu_edu <- compu_edu %>% 
+    pivot_longer(-Grupo, names_to = "NIVEL", values_to = "FAC_PER") %>% 
+    filter(NIVEL!="NA" & FAC_PER>0)
+
+
+
+ggplot(compu_edu, aes(y=as.character(NIVEL),x=as.character(Grupo), fill=FAC_PER*100))+
+    geom_tile()+
+    labs(
+        title = "Último nivel de estudio en los grupos",
+        subtitle = "Usuarios que aprendieron a usar la computadora en la escuela",
+        caption = nota,
+        y = "Nivel Educativo", x = "Grupo", fill="%"
+        
+    )+
+    scale_y_discrete(labels=c("Ninguno", "Preescolar", "Primaria", "Secundaria","Normal básica", "Estudio técnico", "Preparatoria", "Estudio técnico superior", "Licenciatura o ingeniería", "Especialidad", "Maestría", "Doctorado", "No sabe"))+
+    scale_fill_paletteer_c("ggthemes::Classic Blue")+
+    theme_light()+
+    theme(axis.text.x = element_text(angle=90))
+
+ggsave(
+    path=path, filename= "grupos_edu_compu.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+# IDTMex POR ESTADO Y GRUPO
+
+IDTMex_grupo_edo <- IDTMex_grupo_edo %>% 
+    pivot_longer(-c(ESTRATO,Grupo),names_to = "ENT", values_to = "IDTMex") %>%
+    filter(IDTMex>0)
+
+ggplot(IDTMex_grupo_edo, aes(x=ENT, y=factor(Grupo), fill=IDTMex))+
+    geom_tile()+
+    labs(
+        title = "Valor del IDTMex en los grupos por entidad",
+        caption = nota,
+        y = "Grupo", x = "Entidad", fill="IDTMex"
+        
+    )+
+    #scale_y_discrete(labels=c("Ninguno", "Preescolar", "Primaria", "Secundaria","Normal básica", "Estudio técnico", "Preparatoria", "Estudio técnico superior", "Licenciatura o ingeniería", "Especialidad", "Maestría", "Doctorado", "No sabe"))+
+    scale_fill_paletteer_c("ggthemes::Classic Blue")+
+    theme_light()+
+    theme(axis.text.x = element_text(angle=90))
+
+ggsave(
+    path=path, filename= "IDTMex_edo_grupo.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+#
+
 
 #### ESTRATO BAJO ####
+
+path <- "./Graficas/BAJO/"
+
 estrato1_viv <- endutih_vivhogar %>% filter(ESTRATO==1)
 estrato1_res <- endutih_res %>% filter(ESTRATO==1)
 estrato1_usu <- endutih_usu %>% filter(ESTRATO==1)
@@ -609,19 +692,17 @@ estrato1_usu2 <- endutih_usu2 %>% filter(ESTRATO==1)
 
 
 # MATERIAL DE PISOS
-g11_pisos <- estrato1_viv %>% group_by(P1_1) %>% dplyr::summarise(Total= sum(FAC_VIV))
-g11_pisos$P1_1 <- as.factor(g11_pisos$P1_1)
 pisos <- c("1"="Tierra","2"="Cemento, firme", "3"="Madera,mosaico,\notro")
 
-ggplot(g11_pisos, mapping = aes(y=P1_1,x=Total/1e3), )+
-    geom_bar(stat="identity", fill=main)+
+ggplot(estrato1_viv, mapping = aes(y=factor(P1_1),weight=FAC_VIV), )+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),fill=main, color=lmain)+
     labs(
         title = "Material de piso de las viviendas",
         subtitle = "Estrato Bajo",
         caption = nota,
-        y="Material", x="Viviendas (en miles)"
+        y="Material", x="% Viviendas"
         )+
-    scale_x_continuous(n.breaks = 7)+
+    scale_x_continuous(n.breaks = 10)+
     scale_y_discrete(
         labels=pisos
         )+
@@ -629,20 +710,20 @@ ggplot(g11_pisos, mapping = aes(y=P1_1,x=Total/1e3), )+
     theme(axis.text.x = element_text(angle=90))
 
 ggsave(
-    filename= "./Graficas/BAJO_material_piso.pdf",
+    path=path, filename= "BAJO_material_piso.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
 
 # EDAD
-ggplot(estrato1_res, aes(EDAD, weight=FAC_HOGAR/1e3))+
-    geom_histogram(color=lmain, fill=main, bins = 26)+
+ggplot(estrato1_res, aes(EDAD, weight=FAC_HOGAR))+
+    geom_histogram(aes(y=after_stat(density)*(100/25)*100),color=lmain, fill=main, bins = 26)+
     geom_vline( xintercept =sum(estrato1_res$FAC_HOGAR*estrato1_res$EDAD)/sum(estrato1_res$FAC_HOGAR), color=lmain)+
     labs(
         title = "Distribución de edad",
         subtitle = "Estrato Bajo",
         caption = nota,
-        x="Edad", y="Residentes (en miles)"
+        x="Edad", y="% Residentes"
     )+
     scale_y_continuous(n.breaks = 10)+
     scale_x_continuous(n.breaks = 13)+
@@ -650,7 +731,7 @@ ggplot(estrato1_res, aes(EDAD, weight=FAC_HOGAR/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/BAJO_hist_edad.pdf",
+    path=path, filename= "BAJO_hist_edad.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -674,13 +755,13 @@ modalidades <- c(
     "Solo Internet"
 )
 
-ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     labs(
         title = "Modalidad de contratación de servicios",
         subtitle = "Estrato Bajo",
         caption = nota,
-        y="Modalidad", x="Hogares (en miles)"
+        y="Modalidad", x="% Hogares"
     )+
     scale_y_discrete(labels=modalidades)+
     scale_x_continuous(n.breaks = 8)+
@@ -688,7 +769,7 @@ ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/BAJO_modalidad_compu.pdf",
+    path=path, filename= "BAJO_modalidad_compu.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -703,13 +784,13 @@ aprendizaje_compu <- estrato1_usu %>%
 
 modos <- c("Cuenta propia", "Trabajo", "Escuela", "Cursos pagados", "Cursos gratuitos", "Parientes", "Otro")
     
-ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     labs(
         title = "Modo de aprendizaje para el uso de computadora",
         subtitle = "Estrato Bajo",
         caption = nota,
-        y="Modo", x="Residentes (en miles)"
+        y="Modo", x="% Residentes"
     )+
     scale_y_discrete(labels=modos)+
     scale_x_continuous(n.breaks = 8)+
@@ -717,7 +798,7 @@ ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/BAJO_modo_compu.pdf",
+    path=path, filename= "BAJO_modo_compu.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -739,13 +820,13 @@ lugares <- c(
 )
 
 
-ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     labs(
         title = "Lugares de uso de computadora",
         subtitle = "Estrato Bajo",
         caption = nota,
-        y="Lugar", x="Residentes (en miles)"
+        y="Lugar", x="% Residentes"
     )+
     scale_y_discrete(labels=lugares)+
     scale_x_continuous(n.breaks = 10)+
@@ -753,7 +834,7 @@ ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/BAJO_lugar_compu.pdf",
+    path=path, filename= "BAJO_lugar_compu.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -776,13 +857,13 @@ habilidades <- c(
 )
 
 
-ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     labs(
         title = "Habilidades con la computadora",
         subtitle = "Estrato Bajo",
         caption = nota,
-        y="Habilidad", x="Residentes (en miles)"
+        y="Habilidad", x="% Residentes"
     )+
     scale_y_discrete(labels=habilidades)+
     scale_x_continuous(n.breaks = 10)+
@@ -790,7 +871,7 @@ ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/BAJO_habilidad_compu.pdf",
+    path=path, filename= "BAJO_habilidad_compu.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -810,13 +891,13 @@ usos <- c(
 )
 
 
-ggplot(usos_compu, aes(y=Uso, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(usos_compu, aes(y=Uso, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)), color=lmain, fill=main)+
     labs(
         title = "Usos de la computadora",
         subtitle = "Estrato Bajo",
         caption = nota,
-        y="Usos", x="Residentes (en miles)"
+        y="Usos", x="% Residentes"
     )+
     scale_y_discrete(labels=usos)+
     scale_x_continuous(n.breaks = 10)+
@@ -824,19 +905,19 @@ ggplot(usos_compu, aes(y=Uso, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/BAJO_uso_compu.pdf",
+    path=path, filename= "BAJO_uso_compu.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
 
 # INTENSIDAD DE USO DE INTERNET
-ggplot(estrato1_usu %>% filter(P7_1==1), aes(P7_4, weight=FAC_PER/1e3))+
-    geom_histogram(color=lmain, fill=main, bins = 12)+
+ggplot(estrato1_usu %>% filter(P7_1==1), aes(P7_4, weight=FAC_PER))+
+    geom_histogram(aes(y = after_stat(density)*100),color=lmain, fill=main, bins = 12)+
     labs(
         title = "Distribución de la intensidad de uso de Internet",
         subtitle = "Estrato Bajo",
         caption = nota,
-        x="Horas de uso en un día", y="Residentes (en miles)"
+        x="Horas de uso en un día", y="% Residentes"
     )+
     scale_y_continuous(n.breaks = 10)+
     scale_x_continuous(n.breaks = 13)+
@@ -844,7 +925,7 @@ ggplot(estrato1_usu %>% filter(P7_1==1), aes(P7_4, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/BAJO_hist_intensidad_internet.pdf",
+    path=path, filename= "BAJO_hist_intensidad_internet.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -865,13 +946,13 @@ equipos <- c(
 )
 
 
-ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     labs(
         title = "Equipos donde utiliza Internet",
         subtitle = "Estrato Bajo",
         caption = nota,
-        y="Equipos", x="Residentes (en miles)"
+        y="Equipos", x="% Residentes"
     )+
     scale_y_discrete(labels=equipos)+
     scale_x_continuous(n.breaks = 10)+
@@ -879,7 +960,7 @@ ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/BAJO_equipo_internet.pdf",
+    path=path, filename= "BAJO_equipo_internet.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -901,13 +982,13 @@ lugares <- c(
 )
 
 
-ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     labs(
         title = "Lugares donde utiliza Internet",
         subtitle = "Estrato Bajo",
         caption = nota,
-        y="Lugares", x="Residentes (en miles)"
+        y="Lugares", x="% Residentes"
     )+
     scale_y_discrete(labels=lugares)+
     scale_x_continuous(n.breaks = 10)+
@@ -915,7 +996,7 @@ ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/BAJO_lugar_internet.pdf",
+    path=path, filename= "BAJO_lugar_internet.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -938,13 +1019,13 @@ problemas <- c(
 )
 
 
-ggplot(problema_internet, aes(y=Problema, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(problema_internet, aes(y=Problema, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     labs(
         title = "Problemas de navegación en Internet",
         subtitle = "Estrato Bajo",
         caption = nota,
-        y="Lugares", x="Residentes (en miles)"
+        y="Lugares", x="% Residentes"
     )+
     scale_y_discrete(labels=problemas)+
     scale_x_continuous(n.breaks = 10)+
@@ -952,7 +1033,7 @@ ggplot(problema_internet, aes(y=Problema, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/BAJO_problema_internet.pdf",
+    path=path, filename= "BAJO_problema_internet.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -971,13 +1052,13 @@ planes <- c(
 )
 
 
-ggplot(plan_cel, aes(y=Plan, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(plan_cel, aes(y=Plan, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     labs(
         title = "Planes de contratación de servicio de celular",
         subtitle = "Estrato Bajo",
         caption = nota,
-        y="Planes", x="Residentes (en miles)"
+        y="Planes", x="% Residentes"
     )+
     scale_y_discrete(labels=planes)+
     scale_x_continuous(n.breaks = 10)+
@@ -985,7 +1066,7 @@ ggplot(plan_cel, aes(y=Plan, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/BAJO_plan_cel.pdf",
+    path=path, filename= "BAJO_plan_cel.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -1006,13 +1087,13 @@ usos <- c(
 )
 
 
-ggplot(uso_cel, aes(y=Uso, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(uso_cel, aes(y=Uso, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     labs(
         title = "Uso de aplicaciones móviles",
         subtitle = "Estrato Bajo",
         caption = nota,
-        y="Planes", x="Residentes (en miles)"
+        y="Planes", x="% Residentes"
     )+
     scale_y_discrete(labels=usos)+
     scale_x_continuous(n.breaks = 10)+
@@ -1020,12 +1101,13 @@ ggplot(uso_cel, aes(y=Uso, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/BAJO_uso_cel.pdf",
+    path=path, filename= "BAJO_uso_cel.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
 
 #-----------------------------------------------------------#
+path <- "./Graficas/MEDIOBAJO/"
 
 #### ESTRATO MEDIO BAJO ####
 estrato2_viv <- endutih_vivhogar %>% filter(ESTRATO==2)
@@ -1037,17 +1119,17 @@ estrato2_usu2 <- endutih_usu2 %>% filter(ESTRATO==2)
 # MATERIAL DE PISOS
 pisos <- c("1"="Tierra","2"="Cemento, firme", "3"="Madera,mosaico,\notro")
 
-ggplot(estrato2_viv, mapping = aes(y=as.factor(P1_1),x=FAC_VIV/1e3), )+
-    geom_col(fill=main)+
+ggplot(estrato2_viv, mapping = aes(y=as.factor(P1_1),x=FAC_VIV), )+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain,fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free_x",
+        ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Material de piso de las viviendas",
         subtitle = "Estrato Medio Bajo",
         caption = nota,
-        y="Material", x="Viviendas (en miles)"
+        y="Material", x="% Viviendas"
     )+
     scale_y_discrete(
         labels=pisos
@@ -1059,16 +1141,16 @@ ggplot(estrato2_viv, mapping = aes(y=as.factor(P1_1),x=FAC_VIV/1e3), )+
     )
 
 ggsave(
-    filename= "./Graficas/MEDIOBAJO_material_piso.pdf",
+    path=path, filename= "MEDIOBAJO_material_piso.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
 
 # EDAD 1+ 3.322*log10(sum(estrato2_res$FAC_HOGAR))
-ggplot(estrato2_res, aes(EDAD, weight=FAC_HOGAR/1e3))+
-    geom_histogram(color=lmain, fill=main, bins = 27)+
+ggplot(estrato2_res, aes(EDAD, weight=FAC_HOGAR))+
+    geom_histogram(aes(y=after_stat(density)*(100/26)*100),color=lmain, fill=main, bins = 27)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free",
+        ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     geom_vline( xintercept =sum(estrato2_res$FAC_HOGAR*estrato2_res$EDAD)/sum(estrato2_res$FAC_HOGAR), color=lmain)+
@@ -1076,7 +1158,7 @@ ggplot(estrato2_res, aes(EDAD, weight=FAC_HOGAR/1e3))+
         title = "Distribución de edad",
         subtitle = "Estrato Medio Bajo",
         caption = nota,
-        x="Edad", y="Residentes (en miles)"
+        x="Edad", y="% Residentes"
     )+
     scale_y_continuous(n.breaks = 10)+
     scale_x_continuous(n.breaks = 13)+
@@ -1084,7 +1166,7 @@ ggplot(estrato2_res, aes(EDAD, weight=FAC_HOGAR/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOBAJO_hist_edad.pdf",
+    path=path, filename= "MEDIOBAJO_hist_edad.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -1108,16 +1190,16 @@ modalidades <- c(
     "Solo Internet"
 )
 
-ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)), color=lmain, fill=main)+
     labs(
         title = "Modalidad de contratación de servicios",
         subtitle = "Estrato Medio Bajo",
         caption = nota,
-        y="Modalidad", x="Hogares (en miles)"
+        y="Modalidad", x="% Hogares"
     )+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free_x",
+        ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     scale_y_discrete(labels=modalidades)+
@@ -1126,7 +1208,7 @@ ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOBAJO_modalidad_compu.pdf",
+    path=path, filename= "MEDIOBAJO_modalidad_compu.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -1141,17 +1223,17 @@ aprendizaje_compu <- estrato2_usu %>%
 
 modos <- c("Cuenta propia", "Trabajo", "Escuela", "Cursos pagados", "Cursos gratuitos", "Parientes", "Otro")
 
-ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free_x",
+        ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Modo de aprendizaje para el uso de computadora",
         subtitle = "Estrato Medio Bajo",
         caption = nota,
-        y="Modo", x="Residentes (en miles)"
+        y="Modo", x="% Residentes"
     )+
     scale_y_discrete(labels=modos)+
     scale_x_continuous(n.breaks = 8)+
@@ -1159,7 +1241,7 @@ ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOBAJO_modo_compu.pdf",
+    path=path, filename= "MEDIOBAJO_modo_compu.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -1181,17 +1263,17 @@ lugares <- c(
 )
 
 
-ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free_x",
+        ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Lugares de uso de computadora",
         subtitle = "Estrato Medio Bajo",
         caption = nota,
-        y="Lugar", x="Residentes (en miles)"
+        y="Lugar", x="% Residentes"
     )+
     scale_y_discrete(labels=lugares)+
     scale_x_continuous(n.breaks = 10)+
@@ -1199,7 +1281,7 @@ ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOBAJO_lugar_compu.pdf",
+    path=path, filename= "MEDIOBAJO_lugar_compu.pdf",
     device="pdf", dpi="retina",
     width=36, height=20, units="cm"
 )
@@ -1222,17 +1304,17 @@ habilidades <- c(
 )
 
 
-ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free_x",
+        ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Habilidades con la computadora",
         subtitle = "Estrato Medio Bajo",
         caption = nota,
-        y="Habilidad", x="Residentes (en miles)"
+        y="Habilidad", x="% Residentes"
     )+
     scale_y_discrete(labels=habilidades)+
     scale_x_continuous(n.breaks = 10)+
@@ -1240,7 +1322,7 @@ ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOBAJO_habilidad_compu.pdf",
+    path=path, filename= "MEDIOBAJO_habilidad_compu.pdf",
     device="pdf", dpi="retina",
     width=48, height=27, units="cm"
 )
@@ -1260,17 +1342,17 @@ usos <- c(
 )
 
 
-ggplot(usos_compu, aes(y=Uso, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(usos_compu, aes(y=Uso, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free_x",
+        ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Usos de la computadora",
         subtitle = "Estrato Medio Bajo",
         caption = nota,
-        y="Usos", x="Residentes (en miles)"
+        y="Usos", x="% Residentes"
     )+
     scale_y_discrete(labels=usos)+
     scale_x_continuous(n.breaks = 10)+
@@ -1278,23 +1360,23 @@ ggplot(usos_compu, aes(y=Uso, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOBAJO_uso_compu.pdf",
+    path=path, filename= "MEDIOBAJO_uso_compu.pdf",
     device="pdf", dpi="retina",
     width=36, height=20, units="cm"
 )
 
 # INTENSIDAD DE USO DE INTERNET
-ggplot(estrato2_usu %>% filter(P7_1==1), aes(P7_4, weight=FAC_PER/1e3))+
-    geom_histogram(color=lmain, fill=main, bins = 12)+
+ggplot(estrato2_usu %>% filter(P7_1==1), aes(P7_4, weight=FAC_PER))+
+    geom_histogram(aes(y=after_stat(density)*100),color=lmain, fill=main, bins = 12)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free",
+        ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Distribución de la intensidad de uso de Internet",
         subtitle = "Estrato Medio Bajo",
         caption = nota,
-        x="Horas de uso en un día", y="Residentes (en miles)"
+        x="Horas de uso en un día", y="% Residentes"
     )+
     scale_y_continuous(n.breaks = 10)+
     scale_x_continuous(n.breaks = 13)+
@@ -1302,7 +1384,7 @@ ggplot(estrato2_usu %>% filter(P7_1==1), aes(P7_4, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOBAJO_hist_intensidad_internet.pdf",
+    path=path, filename= "MEDIOBAJO_hist_intensidad_internet.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -1323,17 +1405,17 @@ equipos <- c(
 )
 
 
-ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free_x",
+        ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Equipos donde utiliza Internet",
         subtitle = "Estrato Medio Bajo",
         caption = nota,
-        y="Equipos", x="Residentes (en miles)"
+        y="Equipos", x="% Residentes"
     )+
     scale_y_discrete(labels=equipos)+
     scale_x_continuous(n.breaks = 10)+
@@ -1341,7 +1423,7 @@ ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER/1e3))+
     theme(axis.text.x = element_text(angle=90) )
 
 ggsave(
-    filename= "./Graficas/MEDIOBAJO_equipo_internet.pdf",
+    path=path, filename= "MEDIOBAJO_equipo_internet.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -1363,17 +1445,17 @@ lugares <- c(
 )
 
 
-ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free_x",
+        ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Lugares donde utiliza Internet",
         subtitle = "Estrato Medio Bajo",
         caption = nota,
-        y="Lugares", x="Residentes (en miles)"
+        y="Lugares", x="% Residentes"
     )+
     scale_y_discrete(labels=lugares)+
     scale_x_continuous(n.breaks = 10)+
@@ -1381,7 +1463,7 @@ ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOBAJO_lugar_internet.pdf",
+    path=path, filename= "MEDIOBAJO_lugar_internet.pdf",
     device="pdf", dpi="retina",
     width=48, height=27, units="cm"
 )
@@ -1404,17 +1486,17 @@ problemas <- c(
 )
 
 
-ggplot(problema_internet, aes(y=Problema, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(problema_internet, aes(y=Problema, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free_x",
+        ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Problemas de navegación en Internet",
         subtitle = "Estrato Medio Bajo",
         caption = nota,
-        y="Lugares", x="Residentes (en miles)"
+        y="Lugares", x="% Residentes"
     )+
     scale_y_discrete(labels=problemas)+
     scale_x_continuous(n.breaks = 10)+
@@ -1422,7 +1504,7 @@ ggplot(problema_internet, aes(y=Problema, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOBAJO_problema_internet.pdf",
+    path=path, filename= "MEDIOBAJO_problema_internet.pdf",
     device="pdf", dpi="retina",
     width=36, height=20, units="cm"
 )
@@ -1441,17 +1523,17 @@ planes <- c(
 )
 
 
-ggplot(plan_cel, aes(y=Plan, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(plan_cel, aes(y=Plan, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free_x",
+        ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Planes de contratación de servicio de celular",
         subtitle = "Estrato Medio Bajo",
         caption = nota,
-        y="Planes", x="Residentes (en miles)"
+        y="Planes", x="% Residentes"
     )+
     scale_y_discrete(labels=planes)+
     scale_x_continuous(n.breaks = 10)+
@@ -1459,7 +1541,7 @@ ggplot(plan_cel, aes(y=Plan, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOBAJO_plan_cel.pdf",
+    path=path, filename= "MEDIOBAJO_plan_cel.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -1480,17 +1562,17 @@ usos <- c(
 )
 
 
-ggplot(uso_cel, aes(y=Uso, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(uso_cel, aes(y=Uso, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, ncol = 2,  scales = "free_x",
+        ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Uso de aplicaciones móviles",
         subtitle = "Estrato Medio Bajo",
         caption = nota,
-        y="Planes", x="Residentes (en miles)"
+        y="Planes", x="% Residentes"
     )+
     scale_y_discrete(labels=usos)+
     scale_x_continuous(n.breaks = 10)+
@@ -1498,7 +1580,7 @@ ggplot(uso_cel, aes(y=Uso, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOBAJO_uso_cel.pdf",
+    path=path, filename= "MEDIOBAJO_uso_cel.pdf",
     device="pdf", dpi="retina",
     width=36, height=20, units="cm"
 )
@@ -1507,6 +1589,9 @@ ggsave(
 #-----------------------------------------------------------#
 
 #### ESTRATO MEDIO ALTO ####
+
+path <- "./Graficas/MEDIOALTO/"
+
 estrato3_viv <- endutih_vivhogar %>% filter(ESTRATO==3)
 estrato3_res <- endutih_res %>% filter(ESTRATO==3)
 estrato3_usu <- endutih_usu %>% filter(ESTRATO==3)
@@ -1516,17 +1601,17 @@ estrato3_usu2 <- endutih_usu2 %>% filter(ESTRATO==3)
 # MATERIAL DE PISOS
 pisos <- c("1"="Tierra","2"="Cemento, firme", "3"="Madera,mosaico,\notro")
 
-ggplot(estrato3_viv, mapping = aes(y=as.factor(P1_1),x=FAC_VIV/1e3), )+
-    geom_col(fill=main)+
+ggplot(estrato3_viv, mapping = aes(y=as.factor(P1_1),x=FAC_VIV), )+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)), color=lmain,fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Material de piso de las viviendas",
         subtitle = "Estrato Medio Alto",
         caption = nota,
-        y="Material", x="Viviendas (en miles)"
+        y="Material", x="% Viviendas"
     )+
     scale_y_discrete(
         labels=pisos
@@ -1538,16 +1623,16 @@ ggplot(estrato3_viv, mapping = aes(y=as.factor(P1_1),x=FAC_VIV/1e3), )+
     )
 
 ggsave(
-    filename= "./Graficas/MEDIOALTO_material_piso.pdf",
+    path=path, filename= "MEDIOALTO_material_piso.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
 
 # EDAD 1+ 3.322*log10(sum(estrato3_res$FAC_HOGAR))
-ggplot(estrato3_res, aes(EDAD, weight=FAC_HOGAR/1e3))+
-    geom_histogram(color=lmain, fill=main, bins = 26)+
+ggplot(estrato3_res, aes(EDAD, weight=FAC_HOGAR))+
+    geom_histogram(aes(y=after_stat(density)*(100/25)*100), color=lmain, fill=main, bins = 26)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     geom_vline( xintercept =sum(estrato2_res$FAC_HOGAR*estrato2_res$EDAD)/sum(estrato2_res$FAC_HOGAR), color=lmain)+
@@ -1555,7 +1640,7 @@ ggplot(estrato3_res, aes(EDAD, weight=FAC_HOGAR/1e3))+
         title = "Distribución de edad",
         subtitle = "Estrato Medio Alto",
         caption = nota,
-        x="Edad", y="Residentes (en miles)"
+        x="Edad", y="% Residentes"
     )+
     scale_y_continuous(n.breaks = 10)+
     scale_x_continuous(n.breaks = 13)+
@@ -1563,7 +1648,7 @@ ggplot(estrato3_res, aes(EDAD, weight=FAC_HOGAR/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOALTO_hist_edad.pdf",
+    path=path, filename= "MEDIOALTO_hist_edad.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -1587,16 +1672,16 @@ modalidades <- c(
     "Solo Internet"
 )
 
-ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     labs(
         title = "Modalidad de contratación de servicios",
         subtitle = "Estrato Medio Alto",
         caption = nota,
-        y="Modalidad", x="Hogares (en miles)"
+        y="Modalidad", x="% Hogares"
     )+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     scale_y_discrete(labels=modalidades)+
@@ -1605,7 +1690,7 @@ ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOALTO_modalidad_compu.pdf",
+    path=path, filename= "MEDIOALTO_modalidad_compu.pdf",
     device="pdf", dpi="retina",
     width=48, height=27, units="cm"
 )
@@ -1620,17 +1705,17 @@ aprendizaje_compu <- estrato3_usu %>%
 
 modos <- c("Cuenta propia", "Trabajo", "Escuela", "Cursos pagados", "Cursos gratuitos", "Parientes", "Otro")
 
-ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Modo de aprendizaje para el uso de computadora",
         subtitle = "Estrato Medio Alto",
         caption = nota,
-        y="Modo", x="Residentes (en miles)"
+        y="Modo", x="% Residentes"
     )+
     scale_y_discrete(labels=modos)+
     scale_x_continuous(n.breaks = 8)+
@@ -1638,7 +1723,7 @@ ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOALTO_modo_compu.pdf",
+    path=path, filename= "MEDIOALTO_modo_compu.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -1660,17 +1745,17 @@ lugares <- c(
 )
 
 
-ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Lugares de uso de computadora",
         subtitle = "Estrato Medio Alto",
         caption = nota,
-        y="Lugar", x="Residentes (en miles)"
+        y="Lugar", x="% Residentes"
     )+
     scale_y_discrete(labels=lugares)+
     scale_x_continuous(n.breaks = 10)+
@@ -1678,7 +1763,7 @@ ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER/1e3))+
     theme(axis.text.x = element_text(angle=90))
 
 ggsave(
-    filename= "./Graficas/MEDIOALTO_lugar_compu.pdf",
+    path=path, filename= "MEDIOALTO_lugar_compu.pdf",
     device="pdf", dpi="retina",
     width=48, height=27, units="cm"
 )
@@ -1701,17 +1786,17 @@ habilidades <- c(
 )
 
 
-ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Habilidades con la computadora",
         subtitle = "Estrato Medio Alto",
         caption = nota,
-        y="Habilidad", x="Residentes (en miles)"
+        y="Habilidad", x="% Residentes"
     )+
     scale_y_discrete(labels=habilidades)+
     scale_x_continuous(n.breaks = 10)+
@@ -1719,7 +1804,7 @@ ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOALTO_habilidad_compu.pdf",
+    path=path, filename= "MEDIOALTO_habilidad_compu.pdf",
     device="pdf", dpi="retina",
     width=59, height=33, units="cm"
 )
@@ -1739,17 +1824,17 @@ usos <- c(
 )
 
 
-ggplot(usos_compu, aes(y=Uso, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(usos_compu, aes(y=Uso, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Usos de la computadora",
         subtitle = "Estrato Medio Alto",
         caption = nota,
-        y="Usos", x="Residentes (en miles)"
+        y="Usos", x="% Residentes"
     )+
     scale_y_discrete(labels=usos)+
     scale_x_continuous(n.breaks = 10)+
@@ -1757,30 +1842,30 @@ ggplot(usos_compu, aes(y=Uso, weight=FAC_PER/1e3))+
     theme(axis.text.x = element_text(angle=90))
 
 ggsave(
-    filename= "./Graficas/MEDIOALTO_uso_compu.pdf",
+    path=path, filename= "MEDIOALTO_uso_compu.pdf",
     device="pdf", dpi="retina",
     width=36, height=20, units="cm"
 )
 
 # INTENSIDAD DE USO DE INTERNET
-ggplot(estrato3_usu %>% filter(P7_1==1), aes(P7_4, weight=FAC_PER/1e3))+
-    geom_histogram(color=lmain, fill=main, bins = 12)+
+ggplot(estrato3_usu %>% filter(P7_1==1), aes(P7_4, weight=FAC_PER))+
+    geom_histogram(aes(y=after_stat(density)*100),color=lmain, fill=main, bins = 12)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Distribución de la intensidad de uso de Internet",
         subtitle = "Estrato Medio Alto",
         caption = nota,
-        x="Horas de uso en un día", y="Residentes (en miles)"
+        x="Horas de uso en un día", y="% Residentes"
     )+
     scale_x_continuous(n.breaks = 13)+
     theme_light()+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOALTO_hist_intensidad_internet.pdf",
+    path=path, filename= "MEDIOALTO_hist_intensidad_internet.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -1801,17 +1886,17 @@ equipos <- c(
 )
 
 
-ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Equipos donde utiliza Internet",
         subtitle = "Estrato Medio Alto",
         caption = nota,
-        y="Equipos", x="Residentes (en miles)"
+        y="Equipos", x="% Residentes"
     )+
     scale_y_discrete(labels=equipos)+
     scale_x_continuous(n.breaks = 10)+
@@ -1819,7 +1904,7 @@ ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER/1e3))+
     theme(axis.text.x = element_text(angle=90) )
 
 ggsave(
-    filename= "./Graficas/MEDIOALTO_equipo_internet.pdf",
+    path=path, filename= "MEDIOALTO_equipo_internet.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -1841,17 +1926,17 @@ lugares <- c(
 )
 
 
-ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Lugares donde utiliza Internet",
         subtitle = "Estrato Medio Alto",
         caption = nota,
-        y="Lugares", x="Residentes (en miles)"
+        y="Lugares", x="% Residentes"
     )+
     scale_y_discrete(labels=lugares)+
     scale_x_continuous(n.breaks = 10)+
@@ -1859,7 +1944,7 @@ ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOALTO_lugar_internet.pdf",
+    path=path, filename= "MEDIOALTO_lugar_internet.pdf",
     device="pdf", dpi="retina",
     width=48, height=27, units="cm"
 )
@@ -1882,17 +1967,17 @@ problemas <- c(
 )
 
 
-ggplot(problema_internet, aes(y=Problema, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(problema_internet, aes(y=Problema, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Problemas de navegación en Internet",
         subtitle = "Estrato Medio Alto",
         caption = nota,
-        y="Lugares", x="Residentes (en miles)"
+        y="Lugares", x="% Residentes"
     )+
     scale_y_discrete(labels=problemas)+
     scale_x_continuous(n.breaks = 10)+
@@ -1900,7 +1985,7 @@ ggplot(problema_internet, aes(y=Problema, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/MEDIOALTO_problema_internet.pdf",
+    path=path, filename= "MEDIOALTO_problema_internet.pdf",
     device="pdf", dpi="retina",
     width=59, height=33, units="cm"
 )
@@ -1919,17 +2004,17 @@ planes <- c(
 )
 
 
-ggplot(plan_cel, aes(y=Plan, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(plan_cel, aes(y=Plan, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Planes de contratación de servicio de celular",
         subtitle = "Estrato Medio Alto",
         caption = nota,
-        y="Planes", x="Residentes (en miles)"
+        y="Planes", x="% Residentes"
     )+
     scale_y_discrete(labels=planes)+
     scale_x_continuous(n.breaks = 10)+
@@ -1937,7 +2022,7 @@ ggplot(plan_cel, aes(y=Plan, weight=FAC_PER/1e3))+
     theme(axis.text.x = element_text(angle=90))
 
 ggsave(
-    filename= "./Graficas/MEDIOALTO_plan_cel.pdf",
+    path=path, filename= "MEDIOALTO_plan_cel.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -1958,17 +2043,17 @@ usos <- c(
 )
 
 
-ggplot(uso_cel, aes(y=Uso, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(uso_cel, aes(y=Uso, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Uso de aplicaciones móviles",
         subtitle = "Estrato Medio Alto",
         caption = nota,
-        y="Planes", x="Residentes (en miles)"
+        y="Planes", x="% Residentes"
     )+
     scale_y_discrete(labels=usos)+
     scale_x_continuous(n.breaks = 10)+
@@ -1977,7 +2062,7 @@ ggplot(uso_cel, aes(y=Uso, weight=FAC_PER/1e3))+
         axis.text.x = element_text(angle=90))
 
 ggsave(
-    filename= "./Graficas/MEDIOALTO_uso_cel.pdf",
+    path=path, filename= "MEDIOALTO_uso_cel.pdf",
     device="pdf", dpi="retina",
     width=36, height=20, units="cm"
 )
@@ -1985,6 +2070,7 @@ ggsave(
 #-----------------------------------------------------------#
 
 #### ESTRATO ALTO ####
+path <- "./Graficas/ALTO/"
 estrato4_viv <- endutih_vivhogar %>% filter(ESTRATO==4)
 estrato4_res <- endutih_res %>% filter(ESTRATO==4)
 estrato4_usu <- endutih_usu %>% filter(ESTRATO==4)
@@ -1994,17 +2080,17 @@ estrato4_usu2 <- endutih_usu2 %>% filter(ESTRATO==4)
 # MATERIAL DE PISOS
 pisos <- c("1"="Tierra","2"="Cemento, firme", "3"="Madera,mosaico,\notro")
 
-ggplot(estrato4_viv, mapping = aes(y=as.factor(P1_1),x=FAC_VIV/1e3), )+
-    geom_col(fill=main)+
+ggplot(estrato4_viv, mapping = aes(y=as.factor(P1_1),weight=FAC_VIV), )+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Material de piso de las viviendas",
         subtitle = "Estrato Alto",
         caption = nota,
-        y="Material", x="Viviendas (en miles)"
+        y="Material", x="% Viviendas"
     )+
     scale_y_discrete(
         labels=pisos
@@ -2016,16 +2102,16 @@ ggplot(estrato4_viv, mapping = aes(y=as.factor(P1_1),x=FAC_VIV/1e3), )+
     )
 
 ggsave(
-    filename= "./Graficas/ALTO_material_piso.pdf",
+    path=path, filename= "ALTO_material_piso.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
 
 # EDAD 1+ 3.322*log10(sum(estrato4_res$FAC_HOGAR))
-ggplot(estrato4_res, aes(EDAD, weight=FAC_HOGAR/1e3))+
-    geom_histogram(color=lmain, fill=main, bins = 24)+
+ggplot(estrato4_res, aes(EDAD, weight=FAC_HOGAR))+
+    geom_histogram(aes(y=after_stat(density)*(100/23)*100),color=lmain, fill=main, bins = 24)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     geom_vline( xintercept =sum(estrato2_res$FAC_HOGAR*estrato2_res$EDAD)/sum(estrato2_res$FAC_HOGAR), color=lmain)+
@@ -2033,7 +2119,7 @@ ggplot(estrato4_res, aes(EDAD, weight=FAC_HOGAR/1e3))+
         title = "Distribución de edad",
         subtitle = "Estrato Alto",
         caption = nota,
-        x="Edad", y="Residentes (en miles)"
+        x="Edad", y="% Residentes"
     )+
     scale_y_continuous(n.breaks = 10)+
     scale_x_continuous(n.breaks = 13)+
@@ -2041,7 +2127,7 @@ ggplot(estrato4_res, aes(EDAD, weight=FAC_HOGAR/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/ALTO_hist_edad.pdf",
+    path=path, filename= "ALTO_hist_edad.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -2065,16 +2151,16 @@ modalidades <- c(
     "Solo Internet"
 )
 
-ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     labs(
         title = "Modalidad de contratación de servicios",
         subtitle = "Estrato Alto",
         caption = nota,
-        y="Modalidad", x="Hogares (en miles)"
+        y="Modalidad", x="% Hogares"
     )+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     scale_y_discrete(labels=modalidades)+
@@ -2083,7 +2169,7 @@ ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/ALTO_modalidad_compu.pdf",
+    path=path, filename= "ALTO_modalidad_compu.pdf",
     device="pdf", dpi="retina",
     width=48, height=27, units="cm"
 )
@@ -2098,17 +2184,17 @@ aprendizaje_compu <- estrato4_usu %>%
 
 modos <- c("Cuenta propia", "Trabajo", "Escuela", "Cursos pagados", "Cursos gratuitos", "Parientes", "Otro")
 
-ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Modo de aprendizaje para el uso de computadora",
         subtitle = "Estrato Alto",
         caption = nota,
-        y="Modo", x="Residentes (en miles)"
+        y="Modo", x="% Residentes"
     )+
     scale_y_discrete(labels=modos)+
     scale_x_continuous(n.breaks = 8)+
@@ -2116,7 +2202,7 @@ ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/ALTO_modo_compu.pdf",
+    path=path, filename= "ALTO_modo_compu.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -2138,17 +2224,17 @@ lugares <- c(
 )
 
 
-ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Lugares de uso de computadora",
         subtitle = "Estrato Alto",
         caption = nota,
-        y="Lugar", x="Residentes (en miles)"
+        y="Lugar", x="% Residentes"
     )+
     scale_y_discrete(labels=lugares)+
     scale_x_continuous(n.breaks = 10)+
@@ -2156,7 +2242,7 @@ ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER/1e3))+
     theme(axis.text.x = element_text(angle=90))
 
 ggsave(
-    filename= "./Graficas/ALTO_lugar_compu.pdf",
+    path=path, filename= "ALTO_lugar_compu.pdf",
     device="pdf", dpi="retina",
     width=48, height=27, units="cm"
 )
@@ -2179,17 +2265,17 @@ habilidades <- c(
 )
 
 
-ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Habilidades con la computadora",
         subtitle = "Estrato Alto",
         caption = nota,
-        y="Habilidad", x="Residentes (en miles)"
+        y="Habilidad", x="% Residentes"
     )+
     scale_y_discrete(labels=habilidades)+
     scale_x_continuous(n.breaks = 10)+
@@ -2197,7 +2283,7 @@ ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/ALTO_habilidad_compu.pdf",
+    path=path, filename= "ALTO_habilidad_compu.pdf",
     device="pdf", dpi="retina",
     width=59, height=33, units="cm"
 )
@@ -2217,17 +2303,17 @@ usos <- c(
 )
 
 
-ggplot(usos_compu, aes(y=Uso, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(usos_compu, aes(y=Uso, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Usos de la computadora",
         subtitle = "Estrato Alto",
         caption = nota,
-        y="Usos", x="Residentes (en miles)"
+        y="Usos", x="% Residentes"
     )+
     scale_y_discrete(labels=usos)+
     scale_x_continuous(n.breaks = 10)+
@@ -2235,30 +2321,30 @@ ggplot(usos_compu, aes(y=Uso, weight=FAC_PER/1e3))+
     theme(axis.text.x = element_text(angle=90))
 
 ggsave(
-    filename= "./Graficas/ALTO_uso_compu.pdf",
+    path=path, filename= "ALTO_uso_compu.pdf",
     device="pdf", dpi="retina",
     width=36, height=20, units="cm"
 )
 
 # INTENSIDAD DE USO DE INTERNET
-ggplot(estrato4_usu %>% filter(P7_1==1), aes(P7_4, weight=FAC_PER/1e3))+
-    geom_histogram(color=lmain, fill=main, bins = 12)+
+ggplot(estrato4_usu %>% filter(P7_1==1), aes(P7_4, weight=FAC_PER))+
+    geom_histogram(aes(y=after_stat(density)*100),color=lmain, fill=main, bins = 12)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Distribución de la intensidad de uso de Internet",
         subtitle = "Estrato Alto",
         caption = nota,
-        x="Horas de uso en un día", y="Residentes (en miles)"
+        x="Horas de uso en un día", y="% Residentes"
     )+
     scale_x_continuous(n.breaks = 13)+
     theme_light()+
     theme()
 
 ggsave(
-    filename= "./Graficas/ALTO_hist_intensidad_internet.pdf",
+    path=path, filename= "ALTO_hist_intensidad_internet.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -2279,17 +2365,17 @@ equipos <- c(
 )
 
 
-ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Equipos donde utiliza Internet",
         subtitle = "Estrato Alto",
         caption = nota,
-        y="Equipos", x="Residentes (en miles)"
+        y="Equipos", x="% Residentes"
     )+
     scale_y_discrete(labels=equipos)+
     scale_x_continuous(n.breaks = 10)+
@@ -2297,7 +2383,7 @@ ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER/1e3))+
     theme(axis.text.x = element_text(angle=90) )
 
 ggsave(
-    filename= "./Graficas/ALTO_equipo_internet.pdf",
+    path=path, filename= "ALTO_equipo_internet.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -2319,17 +2405,17 @@ lugares <- c(
 )
 
 
-ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Lugares donde utiliza Internet",
         subtitle = "Estrato Alto",
         caption = nota,
-        y="Lugares", x="Residentes (en miles)"
+        y="Lugares", x="% Residentes"
     )+
     scale_y_discrete(labels=lugares)+
     scale_x_continuous(n.breaks = 10)+
@@ -2337,7 +2423,7 @@ ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/ALTO_lugar_internet.pdf",
+    path=path, filename= "ALTO_lugar_internet.pdf",
     device="pdf", dpi="retina",
     width=48, height=27, units="cm"
 )
@@ -2360,17 +2446,17 @@ problemas <- c(
 )
 
 
-ggplot(problema_internet, aes(y=Problema, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(problema_internet, aes(y=Problema, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Problemas de navegación en Internet",
         subtitle = "Estrato Alto",
         caption = nota,
-        y="Lugares", x="Residentes (en miles)"
+        y="Lugares", x="% Residentes"
     )+
     scale_y_discrete(labels=problemas)+
     scale_x_continuous(n.breaks = 10)+
@@ -2378,7 +2464,7 @@ ggplot(problema_internet, aes(y=Problema, weight=FAC_PER/1e3))+
     theme()
 
 ggsave(
-    filename= "./Graficas/ALTO_problema_internet.pdf",
+    path=path, filename= "ALTO_problema_internet.pdf",
     device="pdf", dpi="retina",
     width=59, height=33, units="cm"
 )
@@ -2397,17 +2483,17 @@ planes <- c(
 )
 
 
-ggplot(plan_cel, aes(y=Plan, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(plan_cel, aes(y=Plan, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Planes de contratación de servicio de celular",
         subtitle = "Estrato Alto",
         caption = nota,
-        y="Planes", x="Residentes (en miles)"
+        y="Planes", x="% Residentes"
     )+
     scale_y_discrete(labels=planes)+
     scale_x_continuous(n.breaks = 10)+
@@ -2415,7 +2501,7 @@ ggplot(plan_cel, aes(y=Plan, weight=FAC_PER/1e3))+
     theme(axis.text.x = element_text(angle=90))
 
 ggsave(
-    filename= "./Graficas/ALTO_plan_cel.pdf",
+    path=path, filename= "ALTO_plan_cel.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
@@ -2436,17 +2522,17 @@ usos <- c(
 )
 
 
-ggplot(uso_cel, aes(y=Uso, weight=FAC_PER/1e3))+
-    geom_bar(color=lmain, fill=main)+
+ggplot(uso_cel, aes(y=Uso, weight=FAC_PER))+
+    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
     facet_wrap(
-        ~Grupo, nrow = 2,  scales = "free_x",
+        ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
     labs(
         title = "Uso de aplicaciones móviles",
         subtitle = "Estrato Alto",
         caption = nota,
-        y="Planes", x="Residentes (en miles)"
+        y="Planes", x="% Residentes"
     )+
     scale_y_discrete(labels=usos)+
     scale_x_continuous(n.breaks = 10)+
@@ -2455,7 +2541,7 @@ ggplot(uso_cel, aes(y=Uso, weight=FAC_PER/1e3))+
         axis.text.x = element_text(angle=90))
 
 ggsave(
-    filename= "./Graficas/ALTO_uso_cel.pdf",
+    path=path, filename= "ALTO_uso_cel.pdf",
     device="pdf", dpi="retina",
     width=36, height=20, units="cm"
 )

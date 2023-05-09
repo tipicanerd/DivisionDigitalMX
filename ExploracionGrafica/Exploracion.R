@@ -72,6 +72,140 @@ cpalette <- "ggthemes::Classic Blue"
 
 path <- "./Graficas/NACIONAL/"
 
+# INTERNET
+
+##Dominio-Estrato
+estratos <- c("1"="Bajo", "2"="Medio Bajo", "3"="Medio Alto", "4"="Alto")
+dominios <- c("R"="Rural", "U"="Urbano")
+
+dom_est_internet <- read.csv(paste(base_path,"estrato_dominio_estado_internet.csv", sep="")) %>%
+    pivot_longer(-c(ESTRATO,DOMINIO), values_to = "Internet", names_to = "Entidad") %>%
+    filter(Internet>0) %>%
+    mutate(
+        combo = paste(unlist(lapply(DOMINIO, function(x){dominios[x]})),unlist(lapply(ESTRATO, function(x){estratos[x]})), sep="-")
+    )
+
+ggplot(dom_est_internet, aes(x=Entidad,y=combo, fill=Internet))+
+    geom_tile()+
+    coord_equal()+
+    labs(
+        title = "Porcentaje de hogares con Internet por entidad",
+        subtitle = "Según su dominio y estrato socioeconómico",
+        caption = nota,
+        y = "Dominio-Estrato", x = "Entidad", fill="% Internet"
+        
+    )+
+    scale_fill_paletteer_c("ggthemes::Classic Blue")+
+    theme_light()+
+    theme(
+        axis.text.x = element_text(angle=90),
+    )
+
+ggsave(
+    path=path, filename= "NACIONALdominio_estrato_entidad_internet.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+##Educacion
+niveles <- c("Ninguno", "Preescolar", "Primaria", "Secundaria","Normal básica", "Estudio técnico", "Preparatoria", "Estudio técnico superior", "Licenciatura o ingeniería", "Especialidad", "Maestría", "Doctorado", "No sabe")
+
+edu_internet <- read.csv(paste(base_path,"edu_estado_internet.csv", sep="")) %>%
+    pivot_longer(-NIVEL, values_to = "Internet", names_to = "Entidad") %>%
+    filter(Internet>0)
+
+ggplot(edu_internet, aes(x=Entidad,y=factor(NIVEL), fill=Internet))+
+    geom_tile()+
+    coord_equal()+
+    labs(
+        title = "Porcentaje de usuarios de Internet por entidad",
+        subtitle = "Según su último nivel de estudios",
+        caption = nota,
+        y = "Nivel", x = "Entidad", fill="% Internet"
+        
+    )+
+    scale_y_discrete(labels=niveles)+
+    scale_fill_paletteer_c("ggthemes::Classic Blue")+
+    theme_light()+
+    theme(
+        axis.text.x = element_text(angle=90),
+    )
+
+ggsave(
+    path=path, filename= "NACIONALedu_entidad_internet.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+
+# IDTMEX
+
+##Dominio-Estrato
+estratos <- c("1"="Bajo", "2"="Medio Bajo", "3"="Medio Alto", "4"="Alto")
+dominios <- c("R"="Rural", "U"="Urbano")
+
+dom_est_idtmex <- read.csv(paste(base_path,"estrato_dominio_estado_IDTMex.csv", sep="")) %>%
+    pivot_longer(-c(ESTRATO,DOMINIO), values_to = "IDTMex", names_to = "Entidad") %>%
+    filter(IDTMex>0) %>%
+    mutate(
+        combo = paste(unlist(lapply(dom_est_idtmex$DOMINIO, function(x){dominios[x]})),unlist(lapply(dom_est_idtmex$ESTRATO, function(x){estratos[x]})), sep="-")
+    )
+
+ggplot(dom_est_idtmex, aes(x=Entidad,y=combo, fill=IDTMex))+
+    geom_tile()+
+    coord_equal()+
+    labs(
+        title = "Valor del IDTMex por entidad",
+        subtitle = "Según su dominio y estrato socioeconómico",
+        caption = nota,
+        y = "Dominio-Estrato", x = "Entidad", fill="IDTMex"
+        
+    )+
+    scale_fill_paletteer_c("ggthemes::Classic Blue")+
+    theme_light()+
+    theme(
+        axis.text.x = element_text(angle=90),
+    )
+
+ggsave(
+    path=path, filename= "NACIONALdominio_estrato_entidad_IDTMex.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+##Educacion
+niveles <- c("Ninguno", "Preescolar", "Primaria", "Secundaria","Normal básica", "Estudio técnico", "Preparatoria", "Estudio técnico superior", "Licenciatura o ingeniería", "Especialidad", "Maestría", "Doctorado", "No sabe")
+
+edu_idtmex <- read.csv(paste(base_path,"edu_estado_IDTMex.csv", sep="")) %>%
+    pivot_longer(-NIVEL, values_to = "IDTMex", names_to = "Entidad") %>%
+    filter(IDTMex>0)
+
+ggplot(edu_idtmex, aes(x=Entidad,y=factor(NIVEL), fill=IDTMex))+
+    geom_tile()+
+    coord_equal()+
+    labs(
+        title = "Valor del IDTMex por entidad",
+        subtitle = "Según su último nivel de estudios",
+        caption = nota,
+        y = "Nivel", x = "Entidad", fill="IDTMex"
+        
+    )+
+    scale_y_discrete(labels=niveles)+
+    scale_fill_paletteer_c("ggthemes::Classic Blue")+
+    theme_light()+
+    theme(
+        axis.text.x = element_text(angle=90),
+    )
+
+ggsave(
+    path=path, filename= "NACIONALedu_entidad_IDTMex.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+
+# PISOS
+
 pisos <- c("1"="Tierra","2"="Cemento, firme", "3"="Madera,mosaico,\notro")
 
 ggplot(endutih_vivhogar, mapping = aes(y=factor(P1_1),weight=FAC_VIV), )+

@@ -144,11 +144,12 @@ ggsave(
 estratos <- c("1"="Bajo", "2"="Medio Bajo", "3"="Medio Alto", "4"="Alto")
 dominios <- c("R"="Rural", "U"="Urbano")
 
-dom_est_idtmex <- read.csv(paste(base_path,"estrato_dominio_estado_IDTMex.csv", sep="")) %>%
+dom_est_idtmex <- read.csv(paste(base_path,"estrato_dominio_estado_IDTMex.csv", sep="")) 
+dom_est_idtmex <- dom_est_idtmex%>%
     pivot_longer(-c(ESTRATO,DOMINIO), values_to = "IDTMex", names_to = "Entidad") %>%
     filter(IDTMex>0) %>%
     mutate(
-        combo = paste(unlist(lapply(dom_est_idtmex$DOMINIO, function(x){dominios[x]})),unlist(lapply(dom_est_idtmex$ESTRATO, function(x){estratos[x]})), sep="-")
+        combo = paste(unlist(lapply(DOMINIO, function(x){dominios[x]})),unlist(lapply(ESTRATO, function(x){estratos[x]})), sep="-")
     )
 
 ggplot(dom_est_idtmex, aes(x=Entidad,y=combo, fill=IDTMex))+
@@ -176,7 +177,9 @@ ggsave(
 ##Educacion
 niveles <- c("Ninguno", "Preescolar", "Primaria", "Secundaria","Normal básica", "Estudio técnico", "Preparatoria", "Estudio técnico superior", "Licenciatura o ingeniería", "Especialidad", "Maestría", "Doctorado", "No sabe")
 
-edu_idtmex <- read.csv(paste(base_path,"edu_estado_IDTMex.csv", sep="")) %>%
+edu_idtmex <- read.csv(paste(base_path,"edu_estado_IDTMex.csv", sep=""))
+
+edu_idtmex <- edu_idtmex %>%
     pivot_longer(-NIVEL, values_to = "IDTMex", names_to = "Entidad") %>%
     filter(IDTMex>0)
 
@@ -257,8 +260,11 @@ pregs <- paste("P5_7",1:8, sep="_")
 modalidad_servicio <- endutih_vivhogar %>% 
     filter(P5_6_5!=1) %>% 
     select(all_of(c("FAC_HOG",pregs))) %>%
-    pivot_longer(-FAC_HOG, names_to = "Modalidad",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1)
+    mutate(
+        FAC_HOG = FAC_HOG/sum(FAC_HOG)*100
+    )%>%
+    pivot_longer(-FAC_HOG, names_to = "Modalidad",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1)
 
 modalidades <- c(
     "TV de paga, telefonía fija,\nInternet y telefonía móvil",
@@ -271,8 +277,8 @@ modalidades <- c(
     "Solo Internet"
 )
 
-ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(modalidad_servicio, aes(y=Modalidad, x=FAC_HOG))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Modalidad de contratación de servicios",
         subtitle = "Nacional",
@@ -296,13 +302,16 @@ pregs <- paste("P6_6",1:7, sep="_")
 aprendizaje_compu <- endutih_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Metodo",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1)
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    )%>%
+    pivot_longer(-FAC_PER, names_to = "Metodo",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1)
 
 modos <- c("Cuenta propia", "Trabajo", "Escuela", "Cursos pagados", "Cursos gratuitos", "Parientes", "Otro")
 
-ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(aprendizaje_compu, aes(y=Metodo, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Modo de aprendizaje para el uso de computadora",
         subtitle = "Nacional",
@@ -327,8 +336,11 @@ pregs <- paste("P6_7",1:8, sep="_")
 lugares_compu <- endutih_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Lugar",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1)
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    )%>%
+    pivot_longer(-FAC_PER, names_to = "Lugar",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1)
 
 lugares <- c(
     "Hogar", "Trabajo", "Escuela",
@@ -338,8 +350,8 @@ lugares <- c(
 )
 
 
-ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(lugares_compu, aes(y=Lugar, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Lugares de uso de computadora",
         subtitle = "NACIONAL",
@@ -364,8 +376,11 @@ pregs <- paste("P6_8",1:10, sep="_")
 habilidades_compu <- endutih_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Habilidad",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    ) %>%
+    pivot_longer(-FAC_PER, names_to = "Habilidad",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 habilidades <- c(
     "Enviar y recibir\ncorreo", "Descargar contenidos\nde Internet",
@@ -376,8 +391,8 @@ habilidades <- c(
 )
 
 
-ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)), color=lmain, fill=main)+
+ggplot(habilidades_compu, aes(y=Habilidad, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Habilidades con la computadora",
         subtitle = "Nacional",
@@ -401,8 +416,11 @@ pregs <- paste("P6_9",1:6, sep="_")
 usos_compu <- endutih_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Uso",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1)
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    ) %>%
+    pivot_longer(-FAC_PER, names_to = "Uso",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1)
 
 usos <- c(
     "Actividades laborales", "Labores escolares",
@@ -411,8 +429,8 @@ usos <- c(
 )
 
 
-ggplot(usos_compu, aes(y=Uso, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(usos_compu, aes(y=Uso, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Usos de la computadora",
         subtitle = "Nacional",
@@ -457,8 +475,11 @@ pregs <- paste("P7_5",1:7, sep="_")
 #estrato1_usu[,pregs] <- as.character(estrato1_usu[,pregs])
 equipo_internet <- endutih_usu %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Equipo",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    ) %>%
+    pivot_longer(-FAC_PER, names_to = "Equipo",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 equipos <- c(
@@ -468,8 +489,8 @@ equipos <- c(
 )
 
 
-ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(equipo_internet, aes(y=Equipo, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Equipos donde utiliza Internet",
         subtitle = "Nacional",
@@ -493,8 +514,11 @@ pregs <- paste("P7_7",1:8, sep="_")
 
 lugar_internet <- endutih_usu %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Lugar",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    ) %>%
+    pivot_longer(-FAC_PER, names_to = "Lugar",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 lugares <- c(
@@ -505,8 +529,8 @@ lugares <- c(
 )
 
 
-ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)), color=lmain, fill=main)+
+ggplot(lugar_internet, aes(y=Lugar, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Lugares donde utiliza Internet",
         subtitle = "Nacional",
@@ -530,8 +554,11 @@ pregs <- paste("P7_16",1:8, sep="_")
 
 problema_internet <- endutih_usu %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Problema",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    ) %>%
+    pivot_longer(-FAC_PER, names_to = "Problema",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 problemas <- c(
@@ -542,8 +569,8 @@ problemas <- c(
 )
 
 
-ggplot(problema_internet, aes(y=Problema, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)), color=lmain, fill=main)+
+ggplot(problema_internet, aes(y=Problema, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Problemas de navegación en Internet",
         subtitle = "Nacional",
@@ -566,8 +593,11 @@ pregs <- paste("P8_7", 1:3, sep="_")
 
 plan_cel <- endutih_usu2 %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Plan",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    ) %>%
+    pivot_longer(-FAC_PER, names_to = "Plan",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 planes <- c(
@@ -575,8 +605,8 @@ planes <- c(
 )
 
 
-ggplot(plan_cel, aes(y=Plan, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)), color=lmain, fill=main)+
+ggplot(plan_cel, aes(y=Plan, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Planes de contratación de servicio de celular",
         subtitle = "Nacional",
@@ -600,8 +630,11 @@ pregs <- paste("P8_12", 1:9, sep="_")
 
 uso_cel <- endutih_usu2 %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Uso",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    ) %>%
+    pivot_longer(-FAC_PER, names_to = "Uso",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 usos <- c(
     "Mensajería instantánea", "Contenidos de audio y video", "Adquirir bienes o servicios",
@@ -610,8 +643,8 @@ usos <- c(
 )
 
 
-ggplot(uso_cel, aes(y=Uso, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)), color=lmain, fill=main)+
+ggplot(uso_cel, aes(y=Uso, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Uso de aplicaciones móviles",
         subtitle = "Nacional",
@@ -812,7 +845,7 @@ ggsave(
     width=25, height=14, units="cm"
 )
 
-#
+
 
 
 #### ESTRATO BAJO ####
@@ -875,8 +908,11 @@ pregs <- paste("P5_7",1:8, sep="_")
 modalidad_servicio <- estrato1_viv %>% 
     filter(P5_6_5!=1) %>% 
     select(all_of(c("FAC_HOG",pregs))) %>%
-    pivot_longer(-FAC_HOG, names_to = "Modalidad",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    mutate(
+        FAC_HOG = FAC_HOG/sum(FAC_HOG)*100
+    )%>%
+    pivot_longer(-FAC_HOG, names_to = "Modalidad",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 modalidades <- c(
     "TV de paga, telefonía fija,\nInternet y telefonía móvil",
@@ -889,8 +925,8 @@ modalidades <- c(
     "Solo Internet"
 )
 
-ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(modalidad_servicio, aes(y=Modalidad,x=FAC_HOG))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Modalidad de contratación de servicios",
         subtitle = "Estrato Bajo",
@@ -913,13 +949,16 @@ pregs <- paste("P6_6",1:7, sep="_")
 aprendizaje_compu <- estrato1_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Metodo",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1)
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    ) %>%
+    pivot_longer(-FAC_PER, names_to = "Metodo",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1)
 
 modos <- c("Cuenta propia", "Trabajo", "Escuela", "Cursos pagados", "Cursos gratuitos", "Parientes", "Otro")
     
-ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(aprendizaje_compu, aes(y=Metodo, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Modo de aprendizaje para el uso de computadora",
         subtitle = "Estrato Bajo",
@@ -943,8 +982,11 @@ pregs <- paste("P6_7",1:8, sep="_")
 lugares_compu <- estrato1_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Lugar",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1)
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    ) %>%
+    pivot_longer(-FAC_PER, names_to = "Lugar",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1)
 
 lugares <- c(
     "Hogar", "Trabajo", "Escuela",
@@ -954,8 +996,8 @@ lugares <- c(
 )
 
 
-ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(lugares_compu, aes(y=Lugar, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Lugares de uso de computadora",
         subtitle = "Estrato Bajo",
@@ -979,8 +1021,11 @@ pregs <- paste("P6_8",1:10, sep="_")
 habilidades_compu <- estrato1_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Habilidad",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    ) %>%
+    pivot_longer(-FAC_PER, names_to = "Habilidad",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 habilidades <- c(
     "Enviar y recibir\ncorreo", "Descargar contenidos\nde Internet",
@@ -991,8 +1036,8 @@ habilidades <- c(
 )
 
 
-ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(habilidades_compu, aes(y=Habilidad, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Habilidades con la computadora",
         subtitle = "Estrato Bajo",
@@ -1015,8 +1060,11 @@ pregs <- paste("P6_9",1:6, sep="_")
 usos_compu <- estrato1_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Uso",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1)
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    ) %>%
+    pivot_longer(-FAC_PER, names_to = "Uso",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1)
 
 usos <- c(
     "Actividades laborales", "Labores escolares",
@@ -1025,8 +1073,8 @@ usos <- c(
 )
 
 
-ggplot(usos_compu, aes(y=Uso, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)), color=lmain, fill=main)+
+ggplot(usos_compu, aes(y=Uso, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Usos de la computadora",
         subtitle = "Estrato Bajo",
@@ -1069,8 +1117,11 @@ pregs <- paste("P7_5",1:7, sep="_")
 #estrato1_usu[,pregs] <- as.character(estrato1_usu[,pregs])
 equipo_internet <- estrato1_usu %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Equipo",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    ) %>%
+    pivot_longer(-FAC_PER, names_to = "Equipo",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
     
 
 equipos <- c(
@@ -1080,8 +1131,8 @@ equipos <- c(
 )
 
 
-ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(equipo_internet, aes(y=Equipo, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Equipos donde utiliza Internet",
         subtitle = "Estrato Bajo",
@@ -1104,8 +1155,11 @@ pregs <- paste("P7_7",1:8, sep="_")
 
 lugar_internet <- estrato1_usu %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Lugar",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    ) %>%
+    pivot_longer(-FAC_PER, names_to = "Lugar",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 lugares <- c(
@@ -1116,8 +1170,8 @@ lugares <- c(
 )
 
 
-ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(lugar_internet, aes(y=Lugar, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Lugares donde utiliza Internet",
         subtitle = "Estrato Bajo",
@@ -1141,8 +1195,11 @@ pregs <- paste("P7_16",1:8, sep="_")
 
 problema_internet <- estrato1_usu %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Problema",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    ) %>%
+    pivot_longer(-FAC_PER, names_to = "Problema",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 problemas <- c(
@@ -1153,8 +1210,8 @@ problemas <- c(
 )
 
 
-ggplot(problema_internet, aes(y=Problema, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(problema_internet, aes(y=Problema, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Problemas de navegación en Internet",
         subtitle = "Estrato Bajo",
@@ -1177,8 +1234,11 @@ pregs <- paste("P8_7", 1:3, sep="_")
 
 plan_cel <- estrato1_usu2 %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Plan",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    ) %>%
+    pivot_longer(-FAC_PER, names_to = "Plan",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 planes <- c(
@@ -1186,8 +1246,8 @@ planes <- c(
 )
 
 
-ggplot(plan_cel, aes(y=Plan, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(plan_cel, aes(y=Plan, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Planes de contratación de servicio de celular",
         subtitle = "Estrato Bajo",
@@ -1211,8 +1271,11 @@ pregs <- paste("P8_12", 1:9, sep="_")
 
 uso_cel <- estrato1_usu2 %>% 
     select(all_of(c("FAC_PER",pregs))) %>%
-    pivot_longer(-FAC_PER, names_to = "Uso",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    mutate(
+        FAC_PER = FAC_PER/sum(FAC_PER)*100
+    ) %>%
+    pivot_longer(-FAC_PER, names_to = "Uso",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 usos <- c(
     "Mensajería instantánea", "Contenidos de audio y video", "Adquirir bienes o servicios",
@@ -1221,8 +1284,8 @@ usos <- c(
 )
 
 
-ggplot(uso_cel, aes(y=Uso, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(uso_cel, aes(y=Uso, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Uso de aplicaciones móviles",
         subtitle = "Estrato Bajo",
@@ -1310,8 +1373,13 @@ pregs <- paste("P5_7",1:8, sep="_")
 modalidad_servicio <- estrato2_viv %>% 
     filter(P5_6_5!=1) %>% 
     select(all_of(c("FAC_HOG", "Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_HOG,Grupo), names_to = "Modalidad",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_HOG = ave(FAC_HOG,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_HOG,Grupo), names_to = "Modalidad",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
+
+
 
 modalidades <- c(
     "TV de paga, telefonía fija,\nInternet y telefonía móvil",
@@ -1324,8 +1392,8 @@ modalidades <- c(
     "Solo Internet"
 )
 
-ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)), color=lmain, fill=main)+
+ggplot(modalidad_servicio, aes(y=Modalidad, x=FAC_HOG))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Modalidad de contratación de servicios",
         subtitle = "Estrato Medio Bajo",
@@ -1352,13 +1420,16 @@ pregs <- paste("P6_6",1:7, sep="_")
 aprendizaje_compu <- estrato2_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER", "Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Metodo",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1)
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Metodo",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1)
 
 modos <- c("Cuenta propia", "Trabajo", "Escuela", "Cursos pagados", "Cursos gratuitos", "Parientes", "Otro")
 
-ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(aprendizaje_compu, aes(y=Metodo, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -1386,8 +1457,11 @@ pregs <- paste("P6_7",1:8, sep="_")
 lugares_compu <- estrato2_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER", "Grupo", pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Lugar",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1)
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Lugar",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1)
 
 lugares <- c(
     "Hogar", "Trabajo", "Escuela",
@@ -1397,8 +1471,8 @@ lugares <- c(
 )
 
 
-ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(lugares_compu, aes(y=Lugar, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -1426,8 +1500,11 @@ pregs <- paste("P6_8",1:10, sep="_")
 habilidades_compu <- estrato2_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER","Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Habilidad",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Habilidad",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 habilidades <- c(
     "Enviar y recibir\ncorreo", "Descargar contenidos\nde Internet",
@@ -1438,8 +1515,8 @@ habilidades <- c(
 )
 
 
-ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(habilidades_compu, aes(y=Habilidad, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -1466,8 +1543,11 @@ pregs <- paste("P6_9",1:6, sep="_")
 usos_compu <- estrato2_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER", "Grupo", pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Uso",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1)
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Uso",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1)
 
 usos <- c(
     "Actividades laborales", "Labores escolares",
@@ -1476,8 +1556,8 @@ usos <- c(
 )
 
 
-ggplot(usos_compu, aes(y=Uso, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(usos_compu, aes(y=Uso, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -1528,8 +1608,11 @@ pregs <- paste("P7_5",1:7, sep="_")
 #estrato1_usu[,pregs] <- as.character(estrato1_usu[,pregs])
 equipo_internet <- estrato2_usu %>% 
     select(all_of(c("FAC_PER","Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Equipo",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Equipo",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 equipos <- c(
@@ -1539,8 +1622,8 @@ equipos <- c(
 )
 
 
-ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(equipo_internet, aes(y=Equipo, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -1567,8 +1650,11 @@ pregs <- paste("P7_7",1:8, sep="_")
 
 lugar_internet <- estrato2_usu %>% 
     select(all_of(c("FAC_PER","Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Lugar",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Lugar",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 lugares <- c(
@@ -1579,8 +1665,8 @@ lugares <- c(
 )
 
 
-ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(lugar_internet, aes(y=Lugar, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -1608,8 +1694,11 @@ pregs <- paste("P7_16",1:8, sep="_")
 
 problema_internet <- estrato2_usu %>% 
     select(all_of(c("FAC_PER", "Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Problema",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Problema",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 problemas <- c(
@@ -1620,8 +1709,8 @@ problemas <- c(
 )
 
 
-ggplot(problema_internet, aes(y=Problema, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(problema_internet, aes(y=Problema, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -1648,8 +1737,11 @@ pregs <- paste("P8_7", 1:3, sep="_")
 
 plan_cel <- estrato2_usu2 %>% 
     select(all_of(c("FAC_PER","Grupo", pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Plan",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Plan",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 planes <- c(
@@ -1657,8 +1749,8 @@ planes <- c(
 )
 
 
-ggplot(plan_cel, aes(y=Plan, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(plan_cel, aes(y=Plan, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -1686,8 +1778,11 @@ pregs <- paste("P8_12", 1:9, sep="_")
 
 uso_cel <- estrato2_usu2 %>% 
     select(all_of(c("FAC_PER","Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Uso",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Uso",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 usos <- c(
     "Mensajería instantánea", "Contenidos de audio y video", "Adquirir bienes o servicios",
@@ -1696,8 +1791,8 @@ usos <- c(
 )
 
 
-ggplot(uso_cel, aes(y=Uso, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(uso_cel, aes(y=Uso, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, ncol = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -1792,8 +1887,11 @@ pregs <- paste("P5_7",1:8, sep="_")
 modalidad_servicio <- estrato3_viv %>% 
     filter(P5_6_5!=1) %>% 
     select(all_of(c("FAC_HOG", "Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_HOG,Grupo), names_to = "Modalidad",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_HOG = ave(FAC_HOG,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_HOG,Grupo), names_to = "Modalidad",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 modalidades <- c(
     "TV de paga, telefonía fija,\nInternet y telefonía móvil",
@@ -1806,8 +1904,8 @@ modalidades <- c(
     "Solo Internet"
 )
 
-ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(modalidad_servicio, aes(y=Modalidad, x=FAC_HOG))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Modalidad de contratación de servicios",
         subtitle = "Estrato Medio Alto",
@@ -1834,13 +1932,16 @@ pregs <- paste("P6_6",1:7, sep="_")
 aprendizaje_compu <- estrato3_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER", "Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Metodo",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1)
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Metodo",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1)
 
 modos <- c("Cuenta propia", "Trabajo", "Escuela", "Cursos pagados", "Cursos gratuitos", "Parientes", "Otro")
 
-ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(aprendizaje_compu, aes(y=Metodo, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -1868,8 +1969,11 @@ pregs <- paste("P6_7",1:8, sep="_")
 lugares_compu <- estrato3_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER", "Grupo", pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Lugar",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1)
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Lugar",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1)
 
 lugares <- c(
     "Hogar", "Trabajo", "Escuela",
@@ -1879,8 +1983,8 @@ lugares <- c(
 )
 
 
-ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(lugares_compu, aes(y=Lugar, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -1908,8 +2012,11 @@ pregs <- paste("P6_8",1:10, sep="_")
 habilidades_compu <- estrato3_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER","Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Habilidad",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Habilidad",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 habilidades <- c(
     "Enviar y recibir\ncorreo", "Descargar contenidos\nde Internet",
@@ -1920,8 +2027,8 @@ habilidades <- c(
 )
 
 
-ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(habilidades_compu, aes(y=Habilidad, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -1948,8 +2055,11 @@ pregs <- paste("P6_9",1:6, sep="_")
 usos_compu <- estrato3_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER", "Grupo", pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Uso",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1)
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Uso",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1)
 
 usos <- c(
     "Actividades laborales", "Labores escolares",
@@ -1958,8 +2068,8 @@ usos <- c(
 )
 
 
-ggplot(usos_compu, aes(y=Uso, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(usos_compu, aes(y=Uso, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -2009,8 +2119,11 @@ pregs <- paste("P7_5",1:7, sep="_")
 #estrato1_usu[,pregs] <- as.character(estrato1_usu[,pregs])
 equipo_internet <- estrato3_usu %>% 
     select(all_of(c("FAC_PER","Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Equipo",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Equipo",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 equipos <- c(
@@ -2020,8 +2133,8 @@ equipos <- c(
 )
 
 
-ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(equipo_internet, aes(y=Equipo, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -2048,8 +2161,11 @@ pregs <- paste("P7_7",1:8, sep="_")
 
 lugar_internet <- estrato3_usu %>% 
     select(all_of(c("FAC_PER","Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Lugar",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Lugar",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 lugares <- c(
@@ -2060,8 +2176,8 @@ lugares <- c(
 )
 
 
-ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(lugar_internet, aes(y=Lugar, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -2089,8 +2205,11 @@ pregs <- paste("P7_16",1:8, sep="_")
 
 problema_internet <- estrato3_usu %>% 
     select(all_of(c("FAC_PER", "Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Problema",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Problema",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 problemas <- c(
@@ -2101,8 +2220,8 @@ problemas <- c(
 )
 
 
-ggplot(problema_internet, aes(y=Problema, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(problema_internet, aes(y=Problema, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -2129,8 +2248,11 @@ pregs <- paste("P8_7", 1:3, sep="_")
 
 plan_cel <- estrato3_usu2 %>% 
     select(all_of(c("FAC_PER","Grupo", pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Plan",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Plan",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 planes <- c(
@@ -2138,8 +2260,8 @@ planes <- c(
 )
 
 
-ggplot(plan_cel, aes(y=Plan, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(plan_cel, aes(y=Plan, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -2167,8 +2289,11 @@ pregs <- paste("P8_12", 1:9, sep="_")
 
 uso_cel <- estrato3_usu2 %>% 
     select(all_of(c("FAC_PER","Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Uso",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Uso",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 usos <- c(
     "Mensajería instantánea", "Contenidos de audio y video", "Adquirir bienes o servicios",
@@ -2177,8 +2302,8 @@ usos <- c(
 )
 
 
-ggplot(uso_cel, aes(y=Uso, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(uso_cel, aes(y=Uso, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -2271,8 +2396,11 @@ pregs <- paste("P5_7",1:8, sep="_")
 modalidad_servicio <- estrato4_viv %>% 
     filter(P5_6_5!=1) %>% 
     select(all_of(c("FAC_HOG", "Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_HOG,Grupo), names_to = "Modalidad",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_HOG = ave(FAC_HOG,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_HOG,Grupo), names_to = "Modalidad",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 modalidades <- c(
     "TV de paga, telefonía fija,\nInternet y telefonía móvil",
@@ -2285,8 +2413,8 @@ modalidades <- c(
     "Solo Internet"
 )
 
-ggplot(modalidad_servicio, aes(y=Modalidad, weight=FAC_HOG))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(modalidad_servicio, aes(y=Modalidad, x=FAC_HOG))+
+    geom_bar(stat="identity",color=main, fill=main)+
     labs(
         title = "Modalidad de contratación de servicios",
         subtitle = "Estrato Alto",
@@ -2313,13 +2441,16 @@ pregs <- paste("P6_6",1:7, sep="_")
 aprendizaje_compu <- estrato4_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER", "Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Metodo",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1)
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Metodo",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1)
 
 modos <- c("Cuenta propia", "Trabajo", "Escuela", "Cursos pagados", "Cursos gratuitos", "Parientes", "Otro")
 
-ggplot(aprendizaje_compu, aes(y=Metodo, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(aprendizaje_compu, aes(y=Metodo, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -2347,8 +2478,11 @@ pregs <- paste("P6_7",1:8, sep="_")
 lugares_compu <- estrato4_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER", "Grupo", pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Lugar",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1)
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Lugar",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1)
 
 lugares <- c(
     "Hogar", "Trabajo", "Escuela",
@@ -2358,8 +2492,8 @@ lugares <- c(
 )
 
 
-ggplot(lugares_compu, aes(y=Lugar, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(lugares_compu, aes(y=Lugar, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -2387,8 +2521,11 @@ pregs <- paste("P6_8",1:10, sep="_")
 habilidades_compu <- estrato4_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER","Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Habilidad",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Habilidad",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 habilidades <- c(
     "Enviar y recibir\ncorreo", "Descargar contenidos\nde Internet",
@@ -2399,8 +2536,8 @@ habilidades <- c(
 )
 
 
-ggplot(habilidades_compu, aes(y=Habilidad, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(habilidades_compu, aes(y=Habilidad, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -2427,8 +2564,11 @@ pregs <- paste("P6_9",1:6, sep="_")
 usos_compu <- estrato4_usu %>% 
     filter(P6_1==1) %>% 
     select(all_of(c("FAC_PER", "Grupo", pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Uso",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1)
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Uso",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1)
 
 usos <- c(
     "Actividades laborales", "Labores escolares",
@@ -2437,8 +2577,8 @@ usos <- c(
 )
 
 
-ggplot(usos_compu, aes(y=Uso, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(usos_compu, aes(y=Uso, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -2488,8 +2628,11 @@ pregs <- paste("P7_5",1:7, sep="_")
 #estrato1_usu[,pregs] <- as.character(estrato1_usu[,pregs])
 equipo_internet <- estrato4_usu %>% 
     select(all_of(c("FAC_PER","Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Equipo",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Equipo",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 equipos <- c(
@@ -2499,8 +2642,8 @@ equipos <- c(
 )
 
 
-ggplot(equipo_internet, aes(y=Equipo, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(equipo_internet, aes(y=Equipo, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -2527,8 +2670,11 @@ pregs <- paste("P7_7",1:8, sep="_")
 
 lugar_internet <- estrato4_usu %>% 
     select(all_of(c("FAC_PER","Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Lugar",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Lugar",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 lugares <- c(
@@ -2539,8 +2685,8 @@ lugares <- c(
 )
 
 
-ggplot(lugar_internet, aes(y=Lugar, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(lugar_internet, aes(y=Lugar, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -2568,8 +2714,11 @@ pregs <- paste("P7_16",1:8, sep="_")
 
 problema_internet <- estrato4_usu %>% 
     select(all_of(c("FAC_PER", "Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Problema",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Problema",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 problemas <- c(
@@ -2580,8 +2729,8 @@ problemas <- c(
 )
 
 
-ggplot(problema_internet, aes(y=Problema, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(problema_internet, aes(y=Problema, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -2608,8 +2757,11 @@ pregs <- paste("P8_7", 1:3, sep="_")
 
 plan_cel <- estrato4_usu2 %>% 
     select(all_of(c("FAC_PER","Grupo", pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Plan",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Plan",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 
 planes <- c(
@@ -2617,8 +2769,8 @@ planes <- c(
 )
 
 
-ggplot(plan_cel, aes(y=Plan, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(plan_cel, aes(y=Plan, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
@@ -2646,8 +2798,11 @@ pregs <- paste("P8_12", 1:9, sep="_")
 
 uso_cel <- estrato4_usu2 %>% 
     select(all_of(c("FAC_PER","Grupo",pregs))) %>%
-    pivot_longer(-c(FAC_PER, Grupo), names_to = "Uso",  values_to = "resultado", values_drop_na = TRUE) %>%
-    filter(resultado==1) 
+    transform(
+        FAC_PER = ave(FAC_PER,Grupo, FUN = prop.table)*100
+    )%>%
+    pivot_longer(-c(FAC_PER, Grupo), names_to = "Uso",  values_to = "respuesta", values_drop_na = TRUE) %>%
+    filter(respuesta==1) 
 
 usos <- c(
     "Mensajería instantánea", "Contenidos de audio y video", "Adquirir bienes o servicios",
@@ -2656,8 +2811,8 @@ usos <- c(
 )
 
 
-ggplot(uso_cel, aes(y=Uso, weight=FAC_PER))+
-    geom_bar(aes(x=after_stat(prop)*100, group=factor(0)),color=lmain, fill=main)+
+ggplot(uso_cel, aes(y=Uso, x=FAC_PER))+
+    geom_bar(stat="identity",color=main, fill=main)+
     facet_wrap(
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})

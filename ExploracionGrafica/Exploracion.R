@@ -89,7 +89,7 @@ ggplot(dom_est_internet, aes(x=Entidad,y=combo, fill=Internet))+
     geom_tile()+
     coord_equal()+
     labs(
-        title = "Porcentaje de hogares con Internet por entidad",
+        title = "Porcentaje de usuarios de Internet por entidad",
         subtitle = "Según su dominio y estrato socioeconómico",
         caption = nota,
         y = "Dominio-Estrato", x = "Entidad", fill="% Internet"
@@ -819,6 +819,32 @@ ggsave(
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )
+
+# Internet POR ESTADO Y GRUPO
+
+Internet_grupo_edo <-  read.csv(paste(base_path,"grupo_ent_internet.csv",sep=""))%>%
+    pivot_longer(-c(Grupo),names_to = "ENT", values_to = "Internet") %>%
+    filter(Internet>0)
+
+ggplot(Internet_grupo_edo, aes(x=ENT, y=factor(Grupo), fill=Internet))+
+    geom_tile()+
+    labs(
+        title = "Usuarios de Internet en los grupos por entidad",
+        caption = nota,
+        y = "Grupo", x = "Entidad", fill="Internet"
+        
+    )+
+    #scale_y_discrete(labels=c("Ninguno", "Preescolar", "Primaria", "Secundaria","Normal básica", "Estudio técnico", "Preparatoria", "Estudio técnico superior", "Licenciatura o ingeniería", "Especialidad", "Maestría", "Doctorado", "No sabe"))+
+    scale_fill_paletteer_c("ggthemes::Classic Blue")+
+    theme_light()+
+    theme(axis.text.x = element_text(angle=90))
+
+ggsave(
+    path=path, filename= "Internet_edo_grupo.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
 
 # IDTMex POR ESTADO Y GRUPO
 

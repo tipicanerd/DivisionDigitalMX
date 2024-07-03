@@ -52,6 +52,9 @@ endutih_completa <- merge(endutih_vivhogar, select(endutih_res, select= -contain
 #IDTMex ESTADO
 IDTMex_grupo_edo <- read.csv("../ConjuntosDatos/IDTMex_grupos_edo.csv", stringsAsFactors = TRUE)
 
+#IDTMex ESTADO DOMINIO
+IDTMex_dominio_grupo_edo <- read.csv("../ConjuntosDatos/IDTMex_dominio_grupos_edo.csv", stringsAsFactors = TRUE)
+
 
 #Variables universales
 nota <- "Nota: Elaboración propia con datos de la ENDUTIH (2020)"
@@ -88,6 +91,8 @@ dom_est_internet <- read.csv(paste(base_path,"estrato_dominio_estado_internet.cs
 ggplot(dom_est_internet, aes(x=Entidad,y=combo, fill=Internet))+
     geom_tile()+
     coord_equal()+
+    geom_text(aes(label = paste0(round(Internet, 0),"%")), color="white", size=2.3) +
+    scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,100), oob = scales::squish)+
     labs(
         title = "Porcentaje de usuarios de Internet por entidad",
         subtitle = "Según su dominio y estrato socioeconómico",
@@ -95,7 +100,6 @@ ggplot(dom_est_internet, aes(x=Entidad,y=combo, fill=Internet))+
         y = "Dominio-Estrato", x = "Entidad", fill="% Internet"
         
     )+
-    scale_fill_paletteer_c("ggthemes::Classic Blue")+
     theme_light()+
     theme(
         axis.text.x = element_text(angle=90),
@@ -116,6 +120,8 @@ edu_internet <- read.csv(paste(base_path,"edu_estado_internet.csv", sep="")) %>%
 
 ggplot(edu_internet, aes(x=Entidad,y=factor(NIVEL), fill=Internet))+
     geom_tile()+
+    geom_text(aes(label = paste0(round(Internet, 0),"%")), color="white", size=2.3) +
+    scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,100), oob = scales::squish)+
     coord_equal()+
     labs(
         title = "Porcentaje de usuarios de Internet por entidad",
@@ -125,7 +131,6 @@ ggplot(edu_internet, aes(x=Entidad,y=factor(NIVEL), fill=Internet))+
         
     )+
     scale_y_discrete(labels=niveles)+
-    scale_fill_paletteer_c("ggthemes::Classic Blue")+
     theme_light()+
     theme(
         axis.text.x = element_text(angle=90),
@@ -154,6 +159,8 @@ dom_est_idtmex <- dom_est_idtmex%>%
 
 ggplot(dom_est_idtmex, aes(x=Entidad,y=combo, fill=IDTMex))+
     geom_tile()+
+    geom_text(aes(label = round(IDTMex, 1)), color="white", size=2.3) +
+    scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,10), oob = scales::squish)+
     coord_equal()+
     labs(
         title = "Valor del IDTMex por entidad",
@@ -162,7 +169,6 @@ ggplot(dom_est_idtmex, aes(x=Entidad,y=combo, fill=IDTMex))+
         y = "Dominio-Estrato", x = "Entidad", fill="IDTMex"
         
     )+
-    scale_fill_paletteer_c("ggthemes::Classic Blue")+
     theme_light()+
     theme(
         axis.text.x = element_text(angle=90),
@@ -185,6 +191,8 @@ edu_idtmex <- edu_idtmex %>%
 
 ggplot(edu_idtmex, aes(x=Entidad,y=factor(NIVEL), fill=IDTMex))+
     geom_tile()+
+    geom_text(aes(label = paste0(round(IDTMex, 1),"")), color="white", size=2.3) +
+    scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,10), oob = scales::squish)+
     coord_equal()+
     labs(
         title = "Valor del IDTMex por entidad",
@@ -194,7 +202,6 @@ ggplot(edu_idtmex, aes(x=Entidad,y=factor(NIVEL), fill=IDTMex))+
         
     )+
     scale_y_discrete(labels=niveles)+
-    scale_fill_paletteer_c("ggthemes::Classic Blue")+
     theme_light()+
     theme(
         axis.text.x = element_text(angle=90),
@@ -677,6 +684,8 @@ grupos_estado_rel_grupo <- grupos_estado_rel_grupo %>%
 
 ggplot(grupos_estado_rel_grupo, aes(as.character(ENT),as.character(Grupo), fill=FAC_HOG*100))+
     geom_tile()+
+    geom_text(aes(label = paste0(round(FAC_HOG*100, 0),"%")), color="black", size=2.3) +
+    scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,100), oob = scales::squish)+
     coord_equal()+
     labs(
         title = "Distribución de grupos en las entidades",
@@ -686,7 +695,6 @@ ggplot(grupos_estado_rel_grupo, aes(as.character(ENT),as.character(Grupo), fill=
         
     )+
     scale_x_discrete(labels=estados$ENT)+
-    scale_fill_paletteer_c("ggthemes::Classic Blue")+
     theme_light()+
     theme(
         axis.text.x = element_text(angle=90),
@@ -705,8 +713,10 @@ grupos_estado_rel_edo <- grupos_estado_rel_edo %>%
     pivot_longer(-Grupo, names_to = "ENT", values_to = "FAC_HOG") %>%
     filter(FAC_HOG>0)
 
-ggplot(grupos_estado_rel_grupo, aes(as.character(ENT),as.character(Grupo), fill=FAC_HOG*100))+
+ggplot(grupos_estado_rel_edo, aes(as.character(ENT),as.character(Grupo), fill=FAC_HOG*100))+
     geom_tile()+
+    geom_text(aes(label = paste0(round(100*FAC_HOG, 0),"%")), color="black", size=2.3) +
+    scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,100), oob = scales::squish)+
     coord_equal()+
     labs(
         title = "Distribución de grupos en las entidades",
@@ -716,7 +726,6 @@ ggplot(grupos_estado_rel_grupo, aes(as.character(ENT),as.character(Grupo), fill=
         
     )+
     scale_x_discrete(labels=estados$ENT)+
-    scale_fill_paletteer_c("ggthemes::Classic Blue")+
     theme_light()+
     theme(
         axis.text.x = element_text(angle=90)
@@ -739,6 +748,8 @@ grupos_trabajo_rel_grupo <- grupos_trabajo_rel_grupo %>%
 
 ggplot(grupos_trabajo_rel_grupo, aes(y=as.character(P3_10),x=as.character(Grupo), fill=FAC_HOGAR*100))+
     geom_tile()+
+    geom_text(aes(label = paste0(round(100*FAC_HOGAR, 0),"%")), color="black", size=3) +
+    scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,100), oob = scales::squish)+
     labs(
         title = "Actividad laboral en los grupos la semana pasada",
         subtitle = "Relativo a los grupos",
@@ -747,7 +758,6 @@ ggplot(grupos_trabajo_rel_grupo, aes(y=as.character(P3_10),x=as.character(Grupo)
         
     )+
     scale_y_discrete(labels=c("Trabajó","No fue al trabajo", "Buscó trabajo", "Está jubilado", "Se dedicó a estudiar", "Quehaceres del hogar", "Limitación para trabajar", "No trabajó"))+
-    scale_fill_paletteer_c("ggthemes::Classic Blue")+
     theme_light()+
     theme(axis.text.x = element_text(angle=90))
 
@@ -767,6 +777,8 @@ grupos_edu_rel_grupo <- grupos_edu_rel_grupo %>%
 
 ggplot(grupos_edu_rel_grupo, aes(y=as.character(NIVEL),x=as.character(Grupo), fill=FAC_HOGAR*100))+
     geom_tile()+
+    geom_text(aes(label = paste0(round(100*FAC_HOGAR, 0),"%")), color="black", size=2.3) +
+    scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,100), oob = scales::squish)+
     labs(
         title = "Último nivel de estudio en los grupos",
         subtitle = "Relativo a los grupos",
@@ -775,7 +787,6 @@ ggplot(grupos_edu_rel_grupo, aes(y=as.character(NIVEL),x=as.character(Grupo), fi
         
     )+
     scale_y_discrete(labels=c("Ninguno", "Preescolar", "Primaria", "Secundaria","Normal básica", "Estudio técnico", "Preparatoria", "Estudio técnico superior", "Licenciatura o ingeniería", "Especialidad", "Maestría", "Doctorado", "No sabe"))+
-    scale_fill_paletteer_c("ggthemes::Classic Blue")+
     theme_light()+
     theme(axis.text.x = element_text(angle=90))
 
@@ -802,6 +813,8 @@ compu_edu <- compu_edu %>%
 
 ggplot(compu_edu, aes(y=as.character(NIVEL),x=as.character(Grupo), fill=FAC_PER*100))+
     geom_tile()+
+    geom_text(aes(label = paste0(round(100*FAC_PER, 0),"%")), color="black", size=2.3) +
+    scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,100), oob = scales::squish)+
     labs(
         title = "Último nivel de estudio en los grupos",
         subtitle = "Usuarios que aprendieron a usar la computadora en la escuela",
@@ -810,7 +823,6 @@ ggplot(compu_edu, aes(y=as.character(NIVEL),x=as.character(Grupo), fill=FAC_PER*
         
     )+
     scale_y_discrete(labels=c("Ninguno", "Preescolar", "Primaria", "Secundaria","Normal básica", "Estudio técnico", "Preparatoria", "Estudio técnico superior", "Licenciatura o ingeniería", "Especialidad", "Maestría", "Doctorado", "No sabe"))+
-    scale_fill_paletteer_c("ggthemes::Classic Blue")+
     theme_light()+
     theme(axis.text.x = element_text(angle=90))
 
@@ -828,6 +840,8 @@ Internet_grupo_edo <-  read.csv(paste(base_path,"grupo_ent_internet.csv",sep="")
 
 ggplot(Internet_grupo_edo, aes(x=ENT, y=factor(Grupo), fill=Internet))+
     geom_tile()+
+    geom_text(aes(label = paste0(round(Internet, 0),"%")), color="white", size=2.3) +
+    scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,100), oob = scales::squish)+
     labs(
         title = "Usuarios de Internet en los grupos por entidad",
         caption = nota,
@@ -835,7 +849,6 @@ ggplot(Internet_grupo_edo, aes(x=ENT, y=factor(Grupo), fill=Internet))+
         
     )+
     #scale_y_discrete(labels=c("Ninguno", "Preescolar", "Primaria", "Secundaria","Normal básica", "Estudio técnico", "Preparatoria", "Estudio técnico superior", "Licenciatura o ingeniería", "Especialidad", "Maestría", "Doctorado", "No sabe"))+
-    scale_fill_paletteer_c("ggthemes::Classic Blue")+
     theme_light()+
     theme(axis.text.x = element_text(angle=90))
 
@@ -854,6 +867,8 @@ IDTMex_grupo_edo <- IDTMex_grupo_edo %>%
 
 ggplot(IDTMex_grupo_edo, aes(x=ENT, y=factor(Grupo), fill=IDTMex))+
     geom_tile()+
+    geom_text(aes(label = round(IDTMex, 1)), color="white") +
+    scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,10), oob = scales::squish)+
     labs(
         title = "Valor del IDTMex en los grupos por entidad",
         caption = nota,
@@ -861,12 +876,44 @@ ggplot(IDTMex_grupo_edo, aes(x=ENT, y=factor(Grupo), fill=IDTMex))+
         
     )+
     #scale_y_discrete(labels=c("Ninguno", "Preescolar", "Primaria", "Secundaria","Normal básica", "Estudio técnico", "Preparatoria", "Estudio técnico superior", "Licenciatura o ingeniería", "Especialidad", "Maestría", "Doctorado", "No sabe"))+
-    scale_fill_paletteer_c("ggthemes::Classic Blue")+
     theme_light()+
     theme(axis.text.x = element_text(angle=90))
 
 ggsave(
     path=path, filename= "IDTMex_edo_grupo.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+
+
+# IDTMex POR DOMINIO ESTADO Y GRUPO
+
+IDTMex_dominio_grupo_edo <- IDTMex_dominio_grupo_edo %>% 
+    pivot_longer(-c(ESTRATO,Grupo,DOMINIO),names_to = "ENT", values_to = "IDTMex") %>%
+    filter(IDTMex>0)
+IDTMex_dominio_grupo_edo["DOMGRUPO"] <- paste(str_replace(
+    str_replace(IDTMex_dominio_grupo_edo$DOMINIO,"R","Rural"),
+    "U","Urbano"
+    ), IDTMex_dominio_grupo_edo$Grupo, sep = "-"
+)
+    
+ggplot(IDTMex_dominio_grupo_edo, aes(x=ENT, y=factor(DOMGRUPO), fill=IDTMex))+
+    geom_tile()+
+    geom_text(aes(label = round(IDTMex, 1)), color="white") +
+    scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,10), oob = scales::squish)+
+    labs(
+        title = "Valor del IDTMex en los grupos por entidad",
+        caption = nota,
+        y = "Dominio-Grupo", x = "Entidad", fill="IDTMex"
+        
+    )+
+    #scale_y_discrete(labels=c("Ninguno", "Preescolar", "Primaria", "Secundaria","Normal básica", "Estudio técnico", "Preparatoria", "Estudio técnico superior", "Licenciatura o ingeniería", "Especialidad", "Maestría", "Doctorado", "No sabe"))+
+    theme_light()+
+    theme(axis.text.x = element_text(angle=90))
+
+ggsave(
+    path=path, filename= "IDTMex_edo_dominio_grupo.pdf",
     device="pdf", dpi="retina",
     width=25, height=14, units="cm"
 )

@@ -674,7 +674,7 @@ ggsave(
 #### TODOS LOS ESTRATOS ####
 path = "./Graficas/GRUPOS/"
 
-# IDTMex POR DOMINIO ESTADO Y GRUP
+# IDTMex POR DOMINIO ESTADO Y GRUPo
 
 IDTMex_dominio_grupo_edo["DOMGRUPO"] <- paste(str_replace(
     str_replace(IDTMex_dominio_grupo_edo$DOMINIO,"R","Rural"),
@@ -706,7 +706,7 @@ ggsave(
 
 ggplot(IDTMex_dominio_grupo_edo, aes(x=ENT, y=factor(DOMGRUPO), fill=10*acceso))+
     geom_tile()+
-    geom_text(aes(label = round(10*acceso, 0)), color="white") +
+    geom_text(aes(label = round(10*acceso, 1)), color="white") +
     scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,10), oob = scales::squish)+
     labs(
         title = "Valor del componente de acceso en los grupos por entidad",
@@ -727,7 +727,7 @@ ggsave(
 
 ggplot(IDTMex_dominio_grupo_edo, aes(x=ENT, y=factor(DOMGRUPO), fill=10*uso))+
     geom_tile()+
-    geom_text(aes(label = round(10*uso, 0)), color="white") +
+    geom_text(aes(label = round(10*uso, 1)), color="white") +
     scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,10), oob = scales::squish)+
     labs(
         title = "Valor del componente de uso en los grupos por entidad",
@@ -748,7 +748,7 @@ ggsave(
 
 ggplot(IDTMex_dominio_grupo_edo, aes(x=ENT, y=factor(DOMGRUPO), fill=10*aptitudes))+
     geom_tile()+
-    geom_text(aes(label = round(10*aptitudes, 0)), color="white") +
+    geom_text(aes(label = round(10*aptitudes, 1)), color="white") +
     scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,10), oob = scales::squish)+
     labs(
         title = "Valor del componente de acceso en los grupos por entidad",

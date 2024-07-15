@@ -53,7 +53,7 @@ endutih_completa <- merge(endutih_vivhogar, select(endutih_res, select= -contain
 IDTMex_grupo_edo <- read.csv("../ConjuntosDatos/IDTMex_grupos_edo.csv", stringsAsFactors = TRUE)
 
 #IDTMex ESTADO DOMINIO
-IDTMex_dominio_grupo_edo <- read.csv("../ConjuntosDatos/IDTMex_dominio_grupos_edo.csv", stringsAsFactors = TRUE)
+IDTMex_dominio_grupo_edo <- read.csv("../ConjuntosDatos/long_IDTMex_desglosado_dominio_grupos_edo.csv", stringsAsFactors = TRUE)
 
 
 #Variables universales
@@ -674,6 +674,98 @@ ggsave(
 #### TODOS LOS ESTRATOS ####
 path = "./Graficas/GRUPOS/"
 
+# IDTMex POR DOMINIO ESTADO Y GRUP
+
+IDTMex_dominio_grupo_edo["DOMGRUPO"] <- paste(str_replace(
+    str_replace(IDTMex_dominio_grupo_edo$DOMINIO,"R","Rural"),
+    "U","Urbano"
+), IDTMex_dominio_grupo_edo$Grupo, sep = "-"
+)
+
+ggplot(IDTMex_dominio_grupo_edo, aes(x=ENT, y=factor(DOMGRUPO), fill=IDTMex))+
+    geom_tile()+
+    geom_text(aes(label = round(IDTMex, 1)), color="white") +
+    scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,10), oob = scales::squish)+
+    labs(
+        title = "Valor del IDTMex en los grupos por entidad",
+        caption = nota,
+        y = "Dominio-Grupo", x = "Entidad", fill="IDTMex"
+        
+    )+
+    #scale_y_discrete(labels=c("Ninguno", "Preescolar", "Primaria", "Secundaria","Normal básica", "Estudio técnico", "Preparatoria", "Estudio técnico superior", "Licenciatura o ingeniería", "Especialidad", "Maestría", "Doctorado", "No sabe"))+
+    theme_light()+
+    theme(axis.text.x = element_text(angle=90))
+
+ggsave(
+    path=path, filename= "IDTMex_edo_dominio_grupo.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+#Componente de acceso
+
+ggplot(IDTMex_dominio_grupo_edo, aes(x=ENT, y=factor(DOMGRUPO), fill=10*acceso))+
+    geom_tile()+
+    geom_text(aes(label = round(10*acceso, 0)), color="white") +
+    scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,10), oob = scales::squish)+
+    labs(
+        title = "Valor del componente de acceso en los grupos por entidad",
+        caption = nota,
+        y = "Dominio-Grupo", x = "Entidad", fill="Acceso"
+        
+    )+
+    theme_light()+
+    theme(axis.text.x = element_text(angle=90))
+
+ggsave(
+    path=path, filename= "acceso_edo_dominio_grupo.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+#Componente de uso
+
+ggplot(IDTMex_dominio_grupo_edo, aes(x=ENT, y=factor(DOMGRUPO), fill=10*uso))+
+    geom_tile()+
+    geom_text(aes(label = round(10*uso, 0)), color="white") +
+    scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,10), oob = scales::squish)+
+    labs(
+        title = "Valor del componente de uso en los grupos por entidad",
+        caption = nota,
+        y = "Dominio-Grupo", x = "Entidad", fill="Uso"
+        
+    )+
+    theme_light()+
+    theme(axis.text.x = element_text(angle=90))
+
+ggsave(
+    path=path, filename= "uso_edo_dominio_grupo.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+#Componente de acceso
+
+ggplot(IDTMex_dominio_grupo_edo, aes(x=ENT, y=factor(DOMGRUPO), fill=10*aptitudes))+
+    geom_tile()+
+    geom_text(aes(label = round(10*aptitudes, 0)), color="white") +
+    scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,10), oob = scales::squish)+
+    labs(
+        title = "Valor del componente de acceso en los grupos por entidad",
+        caption = nota,
+        y = "Dominio-Grupo", x = "Entidad", fill="Aptitudes"
+        
+    )+
+    theme_light()+
+    theme(axis.text.x = element_text(angle=90))
+
+ggsave(
+    path=path, filename= "aptitudes_edo_dominio_grupo.pdf",
+    device="pdf", dpi="retina",
+    width=25, height=14, units="cm"
+)
+
+
 # DISTRIBUCION EN LOS ESTADOS
 ## Relativo a grupos
 grupos_estado_rel_grupo <- dcast(endutih_vivhogar, Grupo~ENT, fun.aggregate = sum, value.var = "FAC_HOG")
@@ -885,38 +977,6 @@ ggsave(
     width=25, height=14, units="cm"
 )
 
-
-
-# IDTMex POR DOMINIO ESTADO Y GRUPO
-
-IDTMex_dominio_grupo_edo <- IDTMex_dominio_grupo_edo %>% 
-    pivot_longer(-c(ESTRATO,Grupo,DOMINIO),names_to = "ENT", values_to = "IDTMex") %>%
-    filter(IDTMex>0)
-IDTMex_dominio_grupo_edo["DOMGRUPO"] <- paste(str_replace(
-    str_replace(IDTMex_dominio_grupo_edo$DOMINIO,"R","Rural"),
-    "U","Urbano"
-    ), IDTMex_dominio_grupo_edo$Grupo, sep = "-"
-)
-    
-ggplot(IDTMex_dominio_grupo_edo, aes(x=ENT, y=factor(DOMGRUPO), fill=IDTMex))+
-    geom_tile()+
-    geom_text(aes(label = round(IDTMex, 1)), color="white") +
-    scale_fill_paletteer_c("ggthemes::Classic Blue",limits=range(0,10), oob = scales::squish)+
-    labs(
-        title = "Valor del IDTMex en los grupos por entidad",
-        caption = nota,
-        y = "Dominio-Grupo", x = "Entidad", fill="IDTMex"
-        
-    )+
-    #scale_y_discrete(labels=c("Ninguno", "Preescolar", "Primaria", "Secundaria","Normal básica", "Estudio técnico", "Preparatoria", "Estudio técnico superior", "Licenciatura o ingeniería", "Especialidad", "Maestría", "Doctorado", "No sabe"))+
-    theme_light()+
-    theme(axis.text.x = element_text(angle=90))
-
-ggsave(
-    path=path, filename= "IDTMex_edo_dominio_grupo.pdf",
-    device="pdf", dpi="retina",
-    width=25, height=14, units="cm"
-)
 
 
 

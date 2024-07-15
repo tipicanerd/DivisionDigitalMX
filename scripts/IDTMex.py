@@ -73,8 +73,8 @@ def componente_aptitudes(residentes: pd.DataFrame)->float:
 
     REGRESA:
     Flotante en el intervalo [0,1] que representa el valor de esta componente
-    """
-
+    """ 
+    
     #Porcentaje de residentes adultos que cursaron al menos la primaria 
     alfabetas_proxy = residentes[(residentes.EDAD>=18)&(residentes.NIVEL>=2)].FAC_HOGAR.sum()/residentes[residentes.EDAD>=18].FAC_HOGAR.sum()
 
@@ -104,3 +104,22 @@ def IDTMex(hogares: pd.DataFrame)->float:
     aptitudes = componente_aptitudes(hogares)
 
     return (0.4*acceso + 0.4*uso + 0.2*aptitudes)*10
+
+
+def IDTMex_desglosado(hogares: pd.DataFrame)->float:
+    """
+    Funcion para calcular el IDTMex propuesto por 
+    Micheli Thirión, J., y Valle Zarate, J. (2018)
+    ----------------------------------------------
+    
+    PARAMETROS:
+    @hogares: DataFrame con informacion de vivienda, hogar y residente
+
+    REGRESA:
+    Flotante en el intervalo [0,10] que representa el valor del indice
+    """
+    acceso = componente_acceso(hogares)
+    uso = componente_uso(hogares)
+    aptitudes = componente_aptitudes(hogares)
+
+    return {"acceso":acceso,"uso":uso,"aptitudes":aptitudes}

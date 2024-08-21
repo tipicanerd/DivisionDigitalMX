@@ -53,7 +53,7 @@ def componente_uso(residentes: pd.DataFrame)->float:
     internet = residentes[residentes.P3_9_2==1].FAC_HOGAR.sum()/residentes[~residentes.P3_9_2.isna()].FAC_HOGAR.sum()
 
     #Tipo de conexion a internet
-    respondieron = hogares[~hogares.P4_5.isna()]
+    respondieron = hogares[hogares.P4_5.notna()]
     ## Conexion alambrica
     alambrica = hogares[((hogares.P4_5==1)|(hogares.P4_5==3))].FAC_HOG.sum()/respondieron.FAC_HOG.sum()
     ## Conexion inalambrica
@@ -121,5 +121,6 @@ def IDTMex_desglosado(hogares: pd.DataFrame)->float:
     acceso = componente_acceso(hogares)
     uso = componente_uso(hogares)
     aptitudes = componente_aptitudes(hogares)
+    idtmex = (0.4*acceso + 0.4*uso + 0.2*aptitudes)*10
 
-    return {"acceso":acceso,"uso":uso,"aptitudes":aptitudes}
+    return {"acceso":acceso,"uso":uso,"aptitudes":aptitudes,"IDTMex":idtmex}

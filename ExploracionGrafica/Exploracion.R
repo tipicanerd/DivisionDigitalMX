@@ -1997,7 +1997,7 @@ ggplot(estrato3_res, aes(EDAD, weight=FAC_HOGAR))+
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
-    geom_vline( xintercept =sum(estrato2_res$FAC_HOGAR*estrato2_res$EDAD)/sum(estrato2_res$FAC_HOGAR), color=lmain)+
+    geom_vline( xintercept =sum(estrato3_res$FAC_HOGAR*estrato3_res$EDAD)/sum(estrato3_res$FAC_HOGAR), color=lmain)+
     labs(
         title = "Distribución de edad",
         subtitle = "Estrato Medio Alto",
@@ -2506,7 +2506,7 @@ ggplot(estrato4_res, aes(EDAD, weight=FAC_HOGAR))+
         ~Grupo, nrow = 2,  scales = "fixed",
         labeller = as_labeller(function(x){paste("Grupo",x)})
     )+
-    geom_vline( xintercept =sum(estrato2_res$FAC_HOGAR*estrato2_res$EDAD)/sum(estrato2_res$FAC_HOGAR), color=lmain)+
+    geom_vline( xintercept =sum(estrato4_res$FAC_HOGAR*estrato4_res$EDAD)/sum(estrato4_res$FAC_HOGAR), color=lmain)+
     labs(
         title = "Distribución de edad",
         subtitle = "Estrato Alto",

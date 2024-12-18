@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import numpy as np
 import pandas as pd
 
@@ -124,3 +125,65 @@ def IDTMex_desglosado(hogares: pd.DataFrame)->float:
     idtmex = (0.4*acceso + 0.4*uso + 0.2*aptitudes)*10
 
     return {"acceso":acceso,"uso":uso,"aptitudes":aptitudes,"IDTMex":idtmex}
+
+
+
+
+
+def IDTMex_indicadores(residentes: pd.DataFrame)->float:
+    """
+    Funcion para regresar los indicadores el IDTMex 
+    propuesto por Micheli Thirión, J., y Valle Zarate, J. (2018)
+    ----------------------------------------------
+    
+    PARAMETROS:
+    @residentes: DataFrame con informacion de vivienda, hogar y residente
+
+    REGRESA:
+    Flotante en el intervalo [0,10] que representa el valor del indice
+    """
+    
+    #Distincion entre residentes y hogares
+    hogares = residentes.drop_duplicates(subset=["UPM","VIV_SEL","HOGAR"])
+    
+    #Iniciamos el diccionario
+    indicadores = OrderedDict()
+    
+    ### ACCESO ###
+    
+    #Porcentaje de hogares con telefonia fija
+    indicadores["tel_fija"] = hogares[hogares.P5_5==1].FAC_HOG.sum()/hogares[~hogares.P5_5.isna()].FAC_HOG.sum()
+
+    #Porcentaje de hogares con celular
+    indicadores["cel"] = hogares[hogares.P4_1_6==1].FAC_HOG.sum()/hogares[~hogares.P4_1_6.isna()].FAC_HOG.sum()
+
+    #Porcentaje de hogares con computadora (escritorio, portatil, tablet)
+    indicadores["compu"] = hogares[(hogares.P4_2_1==1)|(hogares.P4_2_2==1)|(hogares.P4_2_3==1)].FAC_HOG.sum()/hogares[(~hogares.P4_2_1.isna())|(~hogares.P4_2_2.isna())|(~hogares.P4_2_1.isna())].FAC_HOG.sum()
+
+    #Porcentaje de hogares con internet
+    indicadores["hog_internet"] = hogares[hogares.P4_4==1].FAC_HOG.sum()/hogares[~hogares.P4_4.isna()].FAC_HOG.sum()
+    
+    ### USO ###
+
+    #Porcentaje de residentes usuarios de Internet
+    indicadores["usr_internet"] = residentes[residentes.P3_9_2==1].FAC_HOGAR.sum()/residentes[~residentes.P3_9_2.isna()].FAC_HOGAR.sum()
+
+    #Tipo de conexion a internet
+    respondieron = hogares[hogares.P4_5.notna()]
+    ## Conexion alambrica
+    indicadores["alambrica"] = hogares[((hogares.P4_5==1)|(hogares.P4_5==3))].FAC_HOG.sum()/respondieron.FAC_HOG.sum()
+    ## Conexion inalambrica
+    indicadores["inalambrica"] = hogares[((hogares.P4_5==2)|(hogares.P4_5==3))].FAC_HOG.sum()/respondieron.FAC_HOG.sum()
+    
+    ### APTITUDES ###
+    
+     #Porcentaje de residentes adultos que cursaron al menos la primaria 
+    indicadores["alfabetas_proxy"] = residentes[(residentes.EDAD>=18)&(residentes.NIVEL>=2)].FAC_HOGAR.sum()/residentes[residentes.EDAD>=18].FAC_HOGAR.sum()
+
+    #Porcentaje de residentes adultos que cursaron al menos el bachillerato 
+    indicadores["bachillerato"] = residentes[(residentes.EDAD>=18)&(residentes.NIVEL>=6)].FAC_HOGAR.sum()/residentes[residentes.EDAD>=18].FAC_HOGAR.sum()
+
+    #Porcentaje de residentes mayores de 23 que fueron a la universidad
+    indicadores["universidad"] = residentes[(residentes.EDAD>=23)&(residentes.NIVEL>=8)].FAC_HOGAR.sum()/residentes[residentes.EDAD>=23].FAC_HOGAR.sum()
+
+    return indicadores
